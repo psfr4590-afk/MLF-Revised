@@ -272,23 +272,33 @@ def _native_smoke(verify_ollama: bool = False) -> int:
         tmp_root = Path(tmp); output = tmp_root / "output"; scratch = tmp_root / "scratch"; config.setdefault("pipeline", {})["output_dir"] = str(output); config["pipeline"]["scratch_dir"] = str(scratch); config["pipeline"]["resume"] = False; config.setdefault("export", {})["llamacpp_dir"] = str(ROOT / "third_party" / "llama.cpp"); config["export"]["quant"] = "ALL"; config_path = tmp_root / "release_smoke.yaml"; config_path.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8"); from pipeline.orchestrator import Pipeline
         smoke_pipeline = Pipeline(str(config_path), resume=False)
         run_id = smoke_pipeline.cfg["_run_id"]
+        run_started = False
         try:
             _write_local_smoke_input(
                 scratch,
                 pipeline_config_sha256=_sha256(config_path),
-                run_id=smoke_pipeline.cfg["_run_id"],
+                run_id=run_id,
                 config_identities=smoke_pipeline._config_identities,
             )
             _write_smoke_source_manifest(
                 tmp_root,
-                smoke_pipeline.cfg["_run_id"],
+                run_id,
                 smoke_pipeline._source_definition_paths,
             )
-        finally:
-            smoke_pipeline.close()
-        try: _validate_source_manifest(tmp_root / "source_manifest.json")
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError, RuntimeError) as exc: print(f"Invalid smoke source manifest: {exc}"); return 2
-        if run([sys.executable, "run_pipeline.py", "--config", str(config_path), "--no-resume"]): return 2
+            _validate_source_manifest(tmp_root / "source_manifest.json")
+            # Run the same instance that created the fixture and source manifest.
+            # Pipeline.run() owns cleanup once called, including on failure.
+            run_started = True
+            smoke_pipeline.run("all")
+        except Exception as exc:
+            print(f"Native release pipeline failed: {type(exc).__name__}: {exc}")
+            # Before run() starts, the verifier still owns cleanup.
+            if not run_started:
+                try:
+                    smoke_pipeline.close()
+                except Exception as close_exc:
+                    print(f"Pipeline cleanup also failed: {type(close_exc).__name__}: {close_exc}")
+            return 2
         manifest_path = output / "gguf" / "export_manifest.json"
         if not manifest_path.is_file():
             print(f"Missing export manifest: {manifest_path}")

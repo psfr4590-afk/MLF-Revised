@@ -52,3 +52,13 @@ def test_rc_profile_requires_clean_clone(monkeypatch):
     with pytest.raises(SystemExit) as exc_info:
         verify_release.main()
     assert exc_info.value.code != 0
+
+def test_native_smoke_preserves_pipeline_run_identity():
+    import inspect
+
+    source = inspect.getsource(verify_release._native_smoke)
+
+    assert 'smoke_pipeline.run("all")' in source
+    assert 'run([sys.executable, "run_pipeline.py"' not in source
+    assert "_write_smoke_source_manifest(" in source
+    assert "_write_local_smoke_input(" in source

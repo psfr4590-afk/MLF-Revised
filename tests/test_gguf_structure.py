@@ -188,3 +188,21 @@ def test_evidence_files_are_written(tmp_path, monkeypatch):
     vg.verify_gguf(model, _cli(tmp_path), evidence_dir=evidence)
     assert json.loads((evidence / "inference-smoke-test.json").read_text())["status"] == "passed"
     assert (evidence / "inference-smoke-test.txt").is_file() and (evidence / "llama-cli.log").is_file()
+
+
+def test_repeat_runs_ignore_variable_timing_banner(tmp_path, monkeypatch):
+    model = build_gguf(tmp_path / "m.gguf")
+    outputs = iter([
+        "Loading model...\n> Hello\n4\n"
+        "[ Prompt: 1138.8 t/s | Generation: 0.0 t/s ]\nExiting...",
+        "Loading model...\n> Hello\n4\n"
+        "[ Prompt: 1230.0 t/s | Generation: 0.0 t/s ]\nExiting...",
+    ])
+    monkeypatch.setattr(
+        vg.subprocess, "run", lambda *args, **kwargs: _Proc(next(outputs))
+    )
+
+    result = vg.verify_gguf(model, _cli(tmp_path), repeat=2)
+
+    assert result["checks"]["repeat_run_compared"] is True
+    assert "1138.8" in result["generated_output"]

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import struct
 import subprocess
 from pathlib import Path
@@ -293,12 +294,23 @@ def verify_gguf(
 
     cmd = _build_command(cli_path, model_path, prompt, context_length)
     stdout, stderr = _run_generation(cmd)
+    def _stable_generation_output(output: str) -> str:
+        # llama.cpp includes variable prompt/generation timing in its CLI output.
+        # Ignore that measurement while retaining the generated text and other output.
+        return re.sub(
+            r"(?m)^\[\s*Prompt:.*?\]\s*$",
+            "",
+            output,
+        ).strip()
+
+    stable_stdout = _stable_generation_output(stdout)
     for _ in range(repeat - 1):
         again, _ = _run_generation(cmd)
-        if again != stdout:
+        stable_again = _stable_generation_output(again)
+        if stable_again != stable_stdout:
             raise RuntimeError(
                 "non-deterministic generation: identical greedy runs produced different output "
-                f"({stdout!r} vs {again!r})"
+                f"({stable_stdout!r} vs {stable_again!r})"
             )
 
     result = {

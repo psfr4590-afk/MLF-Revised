@@ -547,6 +547,7 @@ class Trainer:
                     remaining_seconds = remaining_tokens / tok_s if tok_s > 0 else None
                     live_estimate_seconds = elapsed + remaining_seconds if remaining_seconds is not None else None
                     metrics.write(json.dumps({
+                        "run_id": provenance.get("run_id"),
                         "step": step, "train_loss": accum_loss, "lr": lr,
                         "grad_norm": float(grad_norm), "tokens_per_sec": tok_s,
                         "elapsed_seconds": elapsed,
@@ -561,6 +562,7 @@ class Trainer:
                     val_loss = self._eval(model, val_loader, device, eval_batches, batch_size)
                     evaluation_duration += time.perf_counter() - eval_started
                     metrics.write(json.dumps({
+                        "run_id": provenance.get("run_id"),
                         "step": step, "val_loss": val_loss,
                         "val_ppl": math.exp(min(val_loss, 20))
                     }) + "\n")
@@ -599,6 +601,37 @@ class Trainer:
             final_eval_started = time.perf_counter()
             final_val_loss = self._eval(model, val_loader, device, eval_batches, batch_size)
             evaluation_duration += time.perf_counter() - final_eval_started
+
+            # Persist the final evaluation as evidence, even when the run is
+            # shorter than its configured periodic evaluation interval.
+            metrics.write(json.dumps({
+                "run_id": provenance.get("run_id"),
+                "step": step,
+                "val_loss": final_val_loss,
+                "val_ppl": math.exp(min(final_val_loss, 20)),
+                "evaluation": "final",
+            }) + "\n")
+            metrics.flush()
+
+            # The final weights become the best checkpoint only if their
+            # validation loss improves on the best result seen so far.
+            if final_val_loss < best_val:
+                best_val = final_val_loss
+                best_step = step
+                save_started = time.perf_counter()
+                save_checkpoint(
+                    model, optimizer, scaler, step, final_val_loss, t,
+                    self.ckpt_dir, tag="best", provenance=provenance,
+                    train_loader=train_loader, val_loader=val_loader,
+                    training_metadata=self._training_metadata(
+                        model, t, seed, step, total_steps, batch_size,
+                        grad_accum, seq_len, tokens_processed, start_time,
+                        evaluation_duration, checkpoint_duration
+                    ),
+                    best_step=best_step, best_val_loss=best_val,
+                )
+                checkpoint_duration += time.perf_counter() - save_started
+
             save_started = time.perf_counter()
             save_checkpoint(
                 model, optimizer, scaler, step, final_val_loss, t, self.ckpt_dir,

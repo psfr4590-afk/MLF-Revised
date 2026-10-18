@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+import json
 
 from command_center.web import app
 
@@ -154,3 +155,99 @@ def test_runner_reconciles_dead_worker_state(tmp_path, monkeypatch):
     assert updates == [(77, {"stages": {"crawl": "failed"}, "status": "ERROR"})]
     assert events[0][1] == "stage.recovered_orphan"
     assert not state_path.exists()
+
+
+
+def test_snapshot_sanitizer_replaces_nested_non_finite_floats():
+    import math
+
+    from command_center.web import _sanitize_json_value
+
+    payload = {
+        "best_loss": float("inf"),
+        "metrics": [float("nan"), float("-inf"), 1.25],
+        "nested": {"value": float("inf"), "count": 3},
+        "unchanged": None,
+    }
+
+    result = _sanitize_json_value(payload)
+
+    assert result["best_loss"] is None
+    assert result["metrics"][:3] == [None, None, 1.25]
+    assert result["nested"] == {"value": None, "count": 3}
+    assert result["unchanged"] is None
+
+    # The result must be serializable as strict JSON, not NaN/Infinity extensions.
+    encoded = json.dumps(result, allow_nan=False)
+    assert "Infinity" not in encoded
+    assert "NaN" not in encoded
+    assert math.isfinite(result["metrics"][2])
+
+
+
+def test_dashboard_snapshot_sanitizes_legacy_non_finite_database_values(tmp_path, monkeypatch):
+    import json
+
+    import command_center.web as web
+    from pipeline.experiment_db import ExperimentDB
+
+    db_path = tmp_path / "legacy-experiment.db"
+    db = ExperimentDB(db_path)
+    try:
+        # Satisfy the required experiment foreign key in this isolated database.
+        db.conn.execute(
+            """INSERT INTO experiments
+               (id, name, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            ("legacy-experiment", "Legacy non-finite regression", "active",
+             "2026-10-18T10:00:00+00:00", "2026-10-18T10:00:00+00:00"),
+        )
+
+        # Simulate historical records written before non-finite values were rejected.
+        db.conn.execute(
+            """INSERT INTO runs (id, experiment_id, dataset_id, started_at, status)
+               VALUES (?, ?, ?, ?, ?)""",
+            ("legacy-nonfinite-run", "legacy-experiment", None,
+             "2026-10-18T10:00:00+00:00", "RUNNING"),
+        )
+        db.conn.execute(
+            """INSERT INTO metrics
+               (run_id, step, metric_name, metric_value, recorded_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            ("legacy-nonfinite-run", 1, "val_loss", float("inf"),
+             "2026-10-18T10:01:00+00:00"),
+        )
+        db.conn.execute(
+            """INSERT INTO checkpoints
+               (run_id, step, val_loss, best_val_loss, is_best, is_final)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            ("legacy-nonfinite-run", 1, float("inf"), float("inf"), 1, 0),
+        )
+        db.conn.execute(
+            """INSERT INTO hardware (run_id, snapshot_json)
+               VALUES (?, ?)""",
+            ("legacy-nonfinite-run", '{"gpu_utilization_percent": Infinity}'),
+        )
+        db.conn.commit()
+    finally:
+        db.close()
+
+    # Every handler call gets a new connection to the isolated temporary DB.
+    monkeypatch.setattr(
+        web,
+        "_experiment_db",
+        lambda: ExperimentDB(db_path),
+    )
+
+    snapshot = web.api_dashboard()
+
+    assert snapshot["training"]["validation_loss"] is None
+    assert snapshot["training"]["best_loss"] is None
+    assert snapshot["hardware"]["gpu_utilization"] is None
+
+    # Reject Python's permissive NaN/Infinity JSON extensions.
+    encoded = json.dumps(snapshot, allow_nan=False)
+    decoded = json.loads(encoded)
+    assert decoded["training"]["validation_loss"] is None
+    assert decoded["training"]["best_loss"] is None
+    assert decoded["hardware"]["gpu_utilization"] is None

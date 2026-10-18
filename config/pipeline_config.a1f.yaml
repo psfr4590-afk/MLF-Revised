@@ -1,0 +1,117 @@
+# Local-only acceptance profile. All generated artifacts stay under .acceptance/.
+pipeline:
+  name: a1f-filesystem-acceptance
+  model_name: a1f-filesystem-acceptance
+  output_dir: .acceptance/output
+  scratch_dir: .acceptance/scratch
+  seed: 42
+  resume: false
+  log_level: INFO
+
+stages:
+  crawl: true
+  clean: true
+  dedup: true
+  weight: true
+  tokenize: true
+  shard: true
+  train: true
+  export: true
+
+crawl:
+  max_workers: 1
+  request_timeout: 1
+  retry_attempts: 0
+  retry_backoff: 0
+  respect_robots_txt: false
+  politeness_delay: 0
+  max_pages_per_domain: 1
+  max_content_bytes: 100000
+  max_redirects: 0
+  fail_on_malformed_jsonl: true
+  dataset_groups_file: config/dataset_groups.a1f.yaml
+  source_weights_file: config/source_weights.yaml
+  sources:
+    web: false
+    github: false
+    arxiv: false
+    huggingface: false
+    google: false
+    local_files: true
+  local_files:
+    paths: [tests/fixtures/filesystem_corpus]
+    recursive: true
+    extensions: [.md, .txt]
+    max_files: 10
+    max_file_bytes: 100000
+
+clean:
+  config_file: config/cleaner_config.yaml
+
+embed_dedup:
+  mode: fallback
+  model: all-MiniLM-L6-v2
+  model_path: null
+  allow_model_download: false
+  batch_size: 8
+  similarity_threshold: 0.92
+  chunk_size: 256
+  index_type: flat
+  ivf_nlist: 4
+
+weight:
+  config_file: config/source_weights.yaml
+  strategy: upsample
+
+tokenizer:
+  type: bpe
+  vocab_size: 512
+  min_frequency: 1
+  special_tokens: ["<|pad|>", "<|unk|>", "<|bos|>", "<|eos|>", "<|sep|>", "<|mask|>"]
+  train_on_sample: true
+  sample_size: 1000
+  output_path: .acceptance/output/tokenizer
+
+shard:
+  sequence_length: 32
+  dtype: uint16
+  shard_size_tokens: 256
+  output_dir: .acceptance/output/shards
+  val_fraction: 0.2
+  shuffle_docs: true
+  seed: 42
+
+train:
+  resume: false
+  allow_cpu_training: true
+  auto_size: false
+  target_training_hours: null
+  observed_tokens_per_sec: null
+  model_preset: "85M"
+  vocab_size: 512
+  seq_len: 32
+  dropout: 0.0
+  lr_max: 3.0e-4
+  lr_min: 3.0e-5
+  weight_decay: 0.1
+  grad_clip: 1.0
+  batch_size: 1
+  grad_accum_steps: 1
+  total_steps: 2
+  warmup_steps: 1
+  eval_every_steps: 1
+  eval_batches: 1
+  checkpoint_every_steps: 1
+  keep_checkpoints: 1
+  shard_dir: .acceptance/output/shards
+
+export:
+  format: gguf
+  llamacpp_dir: third_party/llama.cpp
+  quant: F16
+  model_name: a1f-filesystem-acceptance
+
+command_center:
+  host: 127.0.0.1
+  port: 8000
+  auto_seed_datasets: false

@@ -1,0 +1,117 @@
+# Dataset-session configuration.
+# Dataset-group definitions are authoritative for source selection; dataset profiles
+# bind stable numeric session IDs to those canonical groups.
+pipeline:
+  name: "pretrain-v1-dataset-session"
+  model_name: "pretrain-starter"
+  output_dir: "output"
+  scratch_dir: "scratch"
+  seed: 42
+  resume: true
+
+stages:
+  crawl: true
+  clean: true
+  dedup: true
+  weight: true
+  tokenize: true
+  shard: true
+  train: true
+  export: true
+
+crawl:
+  max_workers: 1
+  request_timeout: 15
+  retry_attempts: 1
+  retry_backoff: 0.5
+  respect_robots_txt: true
+  politeness_delay: 1.0
+  max_pages_per_domain: 2
+  max_content_bytes: 1000000
+  max_redirects: 2
+  fail_on_malformed_jsonl: true
+  dataset_groups_file: "config/dataset_groups.yaml"
+  dataset_profiles_file: "config/dataset_profiles.yaml"
+  source_weights_file: "config/source_weights.yaml"
+  # Individual dataset groups remain authoritative when their own `sources`
+  # mapping is present.
+  sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+  web:
+    seed_urls_file: "config/seed_urls.txt"
+    seed_urls: ["https://docs.python.org/3/tutorial/"]
+    follow_links: false
+    max_depth: 0
+    stay_on_domain: true
+    use_sitemap_discovery: false
+    english_only: true
+
+clean:
+  config_file: "config/cleaner_config.yaml"
+
+embed_dedup:
+  mode: "auto"
+  model: "all-MiniLM-L6-v2"
+  model_path: null
+  allow_model_download: false
+  batch_size: 8
+  similarity_threshold: 0.92
+  chunk_size: 256
+  index_type: "flat"
+  ivf_nlist: 4
+
+weight:
+  config_file: "config/source_weights.yaml"
+  strategy: "upsample"
+
+tokenizer:
+  type: "bpe"
+  vocab_size: 512
+  min_frequency: 1
+  special_tokens: ["<|pad|>", "<|unk|>", "<|bos|>", "<|eos|>", "<|sep|>", "<|mask|>"]
+  train_on_sample: true
+  sample_size: 1000
+  output_path: "output/tokenizer"
+
+shard:
+  sequence_length: 128
+  dtype: "uint16"
+  shard_size_tokens: 2048
+  output_dir: "output/shards"
+  val_fraction: 0.2
+  shuffle_docs: true
+  seed: 42
+
+train:
+  resume: true
+  allow_cpu_training: false
+  auto_size: true
+  target_training_hours: null
+  observed_tokens_per_sec: null
+  model_preset: "85M"
+  vocab_size: 512
+  seq_len: 128
+  dropout: 0.0
+  lr_max: 3.0e-4
+  lr_min: 3.0e-5
+  weight_decay: 0.1
+  grad_clip: 1.0
+  batch_size: 1
+  grad_accum_steps: 1
+  total_steps: 2
+  warmup_steps: 1
+  eval_every_steps: 1
+  eval_batches: 1
+  checkpoint_every_steps: 1
+  keep_checkpoints: 1
+  shard_dir: "output/shards"
+
+export:
+  format: "gguf"
+  llamacpp_dir: "third_party/llama.cpp"
+  quant: "Q4_K_M"
+  model_name: "pretrain-starter"
+
+command_center:
+  host: "127.0.0.1"
+  port: 8000
+  auto_seed_datasets: false

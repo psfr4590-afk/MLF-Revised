@@ -1,0 +1,117 @@
+schema: 1
+name: "dataset-source-policy"
+version: 1
+
+source_kinds:
+  web:
+    acquisition: bounded_http
+    identity_fields: [url]
+    license_mode: review_required
+  github:
+    acquisition: github_api
+    identity_fields: [full_name, default_branch, commit_sha]
+    license_mode: source_license_required
+  arxiv:
+    acquisition: arxiv_api
+    identity_fields: [arxiv_id, version]
+    license_mode: source_license_or_review
+  huggingface:
+    acquisition: datasets_streaming
+    identity_fields: [repo, revision, config, split, row_index]
+    license_mode: dataset_card_required
+  google:
+    acquisition: search_results
+    identity_fields: [result_url, query]
+    license_mode: review_required
+
+quality:
+  min_text_words: 30
+  min_quality_score: 0.35
+  require_nonempty_text: true
+  reject_duplicate_document_ids: true
+  reject_missing_dataset_group: true
+
+rights:
+  unknown_license_blocks_distribution: true
+  unknown_license_blocks_training: false
+  require_source_rights_record: true
+
+exclusions:
+  general-news:
+    patterns:
+      - "\\bbreaking news\\b"
+      - "\\btop stories\\b"
+  marketing:
+    patterns:
+      - "\\bbuy now\\b"
+      - "\\badd to cart\\b"
+      - "\\bsubscribe now\\b"
+      - "\\bsponsored content\\b"
+  entertainment:
+    patterns:
+      - "\\b(?:movie|film|tv|television) review\\b"
+      - "\\bcelebrity gossip\\b"
+      - "\\b(?:music|gaming) news\\b"
+  offensive-instructions:
+    patterns:
+      - "\\bexploit payload\\b"
+      - "\\bcredential dumping\\b"
+      - "\\bmalware deployment\\b"
+  investment-advice:
+    patterns:
+      - "\\bnot financial advice\\b"
+      - "\\bshould you buy\\b"
+      - "\\bprice target\\b"
+  financial-advice:
+    patterns:
+      - "\\bnot financial advice\\b"
+      - "\\bshould you buy\\b"
+      - "\\bprice target\\b"
+  medical-advice:
+    patterns:
+      - "\\bdiagnose you\\b"
+      - "\\byou should take\\b.*\\bmedication\\b"
+      - "\\bprescribe\\b.*\\bmedication\\b"
+  personal-medical-diagnosis:
+    patterns:
+      - "\\byour symptoms mean\\b"
+      - "\\byou have \\b.*\\bdiagnosis\\b"
+  treatment-prescription:
+    patterns:
+      - "\\bprescribe\\b"
+      - "\\bchange your medication\\b"
+  personal-legal-advice:
+    patterns:
+      - "\\byou should sue\\b"
+      - "\\byou should plead guilty\\b"
+      - "\\bthis is legal advice\\b"
+  political-persuasion:
+    patterns:
+      - "\\bvote for\\b"
+      - "\\bvote against\\b"
+      - "\\bsupport this candidate\\b"
+  unsupported-climate-claims:
+    patterns:
+      - "\\bclimate change is a hoax\\b"
+      - "\\bscientists proved climate change is fake\\b"
+  unsupported-health-claims:
+    patterns:
+      - "\\bmiracle cure\\b"
+      - "\\bdetox(?:es|ify|ification)?\\b.*\\bcure\\b"
+      - "\\bcures? cancer\\b"
+      - "\\bvaccines? (?:cause|causes) (?:autism|infertility)\\b"
+  unverified-claims:
+    patterns:
+      - "\\bunverified claim\\b"
+      - "\\bunverified claims\\b"
+      - "\\bunconfirmed report\\b"
+      - "\\bunconfirmed reports\\b"
+  sensational-content:
+    patterns:
+      - "\\bshocking revelation\\b"
+      - "\\byou won't believe\\b"
+      - "\\bexplosive new details\\b"
+  low-quality-social-content:
+    patterns:
+      - "\\bviral post\\b"
+      - "\\bshare this now\\b"

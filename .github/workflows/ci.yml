@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.14"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install CPU PyTorch
+        run: pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
+      - name: Install project dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Install package metadata
+        run: pip install . --no-deps
+      - name: Bootstrap doctor
+        run: python bootstrap.py --doctor
+      - name: Dependency consistency
+        run: python -m pip check
+      - name: Lint
+        run: ruff check --select F --extend-per-file-ignores pipeline/orchestrator.py:F401 command_center pipeline tests scripts run_pipeline.py launch.py bootstrap.py run_command_center.py
+      - name: Compile
+        run: python -m compileall -q .
+      - name: Test suite
+        run: python -m pytest -q
+      - name: Coverage gate
+        run: python -m coverage report --fail-under=60
+
+  windows-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.14"]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install CPU PyTorch
+        shell: pwsh
+        run: pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
+      - name: Install project dependencies
+        shell: pwsh
+        run: pip install -r requirements-dev.txt
+      - name: Install package metadata
+        shell: pwsh
+        run: pip install . --no-deps
+      - name: Bootstrap doctor
+        shell: pwsh
+        run: python bootstrap.py --doctor
+      - name: Dependency consistency
+        shell: pwsh
+        run: python -m pip check
+      - name: Lint
+        shell: pwsh
+        run: ruff check --select F --extend-per-file-ignores pipeline/orchestrator.py:F401 command_center pipeline tests scripts run_pipeline.py launch.py bootstrap.py run_command_center.py
+      - name: Compile
+        shell: pwsh
+        run: python -m compileall -q .
+      - name: Test suite
+        shell: pwsh
+        run: python -m pytest -q
+      - name: Coverage gate
+        shell: pwsh
+        run: python -m coverage report --fail-under=60
+
+  windows-script-contract:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Parse PowerShell bootstrap scripts
+        shell: pwsh
+        run: |
+          foreach ($path in @('scripts/bootstrap_llama_cpp.ps1', 'bootstrap_windows.ps1')) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD $path), [ref]$null, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) { $errors | ForEach-Object { Write-Error $_.ToString() }; exit 1 }
+          }
+      - name: Validate PowerShell bootstrap contract
+        shell: pwsh
+        run: |
+          $source = Get-Content -Raw -Encoding UTF8 'scripts/bootstrap_llama_cpp.ps1'
+          $required = @('$Tag = "b10516"','$Commit = "b95502b"','convert_hf_to_gguf.py','llama-quantize','llama-cli','-DGGML_NATIVE=OFF','-DGGML_OPENMP=OFF','-DLLAMA_BUILD_SERVER=OFF')
+          foreach ($needle in $required) { if ($source -notlike "*$needle*") { throw "Missing PowerShell bootstrap contract: $needle" } }
+          $firstBoot = Get-Content -Raw -Encoding UTF8 'bootstrap_windows.ps1'
+          $firstBootRequired = @('function Find-Python', '@{ Command = "py"; Args = @("-3.13") }', "versionText -match '^3\.(11|12|13|14)$'", '"--install"', '"--doctor"', '"--ensure-llamacpp"', 'Python.Python.3.13', 'Project dependency installation failed')
+          foreach ($needle in $firstBootRequired) { if ($firstBoot -notlike "*$needle*") { throw "Missing Windows first-boot contract: $needle" } }
+          if ($firstBoot -like '*Remove-Item*') { throw 'Windows first-boot bootstrap must not delete project or user data' }
+  clean-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Create isolated install environment
+        run: python -m venv .ci-venv
+      - name: Install host-specific PyTorch
+        run: .ci-venv/bin/python -m pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
+      - name: Install package from source
+        run: .ci-venv/bin/python -m pip install .
+      - name: Verify installed package and entry points
+        run: |
+          .ci-venv/bin/python bootstrap.py --doctor
+          .ci-venv/bin/python mlframework.py --help
+          .ci-venv/bin/python run_command_center.py --help

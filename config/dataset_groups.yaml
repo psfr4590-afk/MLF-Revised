@@ -1,0 +1,237 @@
+dataset_groups:
+  - id: "swe_cs_systems"
+    name: "Software Engineering + Computer Science + Systems Engineering"
+    sources: {web: true, github: false, arxiv: true, huggingface: true, google: false}
+    github:
+      min_stars: 100
+      languages: [C, "C++", Rust, Go, Python, Zig, Java]
+      topics: [operating-systems, compilers, distributed-systems, databases, networking, systems-programming, software-architecture, algorithms, data-structures]
+      max_repos: 300
+    arxiv: {categories: [cs.SE, cs.OS, cs.DC, cs.AR, cs.DS, cs.PL], max_results: 200}
+    huggingface:
+      datasets:
+        - {repo: "bigcode/the-stack-dedup", revision: "v1.2", split: "train", text_field: "content", max_docs: 15000}
+        - {repo: "codeparrot/github-code", revision: "v1.1", split: "train", text_field: "code", max_docs: 10000}
+    google: {queries: ["distributed systems consensus algorithms explained", "operating system kernel design principles", "software architecture patterns case study"]}
+    web:
+      seed_urls:
+        - "https://docs.python.org/3/"
+        - "https://doc.rust-lang.org/book/"
+        - "https://developer.mozilla.org/en-US/docs/Web"
+        - "https://docs.kernel.org/"
+        - "https://www.postgresql.org/docs/"
+        - "https://sqlite.org/docs.html"
+        - "https://kubernetes.io/docs/"
+        - "https://www.rfc-editor.org/"
+        - "https://git-scm.com/doc"
+        - "https://go.dev/doc/"
+
+  - id: "ai_ml_cybersec_dataeng"
+    name: "AI/ML + Cybersecurity + Data Engineering"
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github: {min_stars: 100, languages: [Python, "C++", Rust, Go], topics: [machine-learning, deep-learning, mlops, data-engineering, etl, data-pipelines, network-security, application-security, threat-detection], max_repos: 300}
+    arxiv: {categories: [cs.LG, cs.AI, cs.CL, cs.CR, cs.DB], max_results: 200}
+    huggingface:
+      datasets:
+        - {repo: "HuggingFaceFW/fineweb-edu", revision: "87f0914", config: "sample-10BT", split: "train", text_field: "text", max_docs: 10000}
+        - {repo: "glaiveai/glaive-function-calling-v2", revision: "e7f4b64", split: "train", text_field: "chat", max_docs: 5000}
+    google: {queries: ["machine learning system design interview", "common web application vulnerabilities explained", "data engineering pipeline best practices"]}
+    web:
+      seed_urls:
+        - "https://pytorch.org/docs/stable/"
+        - "https://scikit-learn.org/stable/user_guide.html"
+        - "https://jax.readthedocs.io/"
+        - "https://huggingface.co/docs"
+        - "https://mlflow.org/docs/latest/"
+        - "https://airflow.apache.org/docs/"
+        - "https://owasp.org/www-project-top-ten/"
+        - "https://csrc.nist.gov/"
+        - "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+        - "https://docs.docker.com/"
+
+  - id: "sci_reasoning_forensics_formal"
+    name: "Scientific Reasoning + Digital Forensics + Formal Methods"
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github: {min_stars: 50, languages: [Python, Coq, Lean, Haskell, "C++"], topics: [formal-verification, theorem-proving, model-checking, digital-forensics, incident-response, reverse-engineering], max_repos: 200}
+    arxiv: {categories: [cs.LO, cs.PL, cs.CR, math.ST, stat.ML, physics.data-an], max_results: 200}
+    huggingface: {datasets: [{repo: "qiaojin/PubMedQA", revision: "9001f28", config: "pqa_labeled", split: "train", text_field: "question", max_docs: 5000}]}
+    google: {queries: ["formal verification theorem proving tutorial", "digital forensics investigation methodology", "scientific reasoning hypothesis testing methods"]}
+    web:
+      seed_urls:
+        - "https://lean-lang.org/documentation/"
+        - "https://coq.inria.fr/documentation"
+        - "https://www.nist.gov/itl/forensics"
+        - "https://csrc.nist.gov/publications"
+        - "https://www.swgde.org/documents"
+        - "https://plato.stanford.edu/"
+        - "https://www.nature.com/subjects/scientific-method"
+        - "https://www.acm.org/"
+        - "https://www.cs.cmu.edu/"
+        - "https://www.cs.cornell.edu/"
+
+  - id: "domain_finance_bio_robotics"
+    name: "Domain-specific knowledge: Finance + Biology + Robotics + etc."
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github: {min_stars: 50, languages: [Python, "C++"], topics: [quantitative-finance, algorithmic-trading, bioinformatics, computational-biology, robotics, ros, control-systems], max_repos: 200}
+    arxiv: {categories: [q-fin.GN, q-bio.QM, cs.RO, eess.SY], max_results: 200}
+    huggingface: {datasets: [{repo: "gbharti/finance-alpaca", revision: "c88d3d5", split: "train", text_field: "text", max_docs: 5000}]}
+    google: {queries: ["quantitative finance risk modeling introduction", "computational biology genomics pipeline overview", "robotics control systems fundamentals"]}
+    web:
+      seed_urls:
+        - "https://www.sec.gov/edgar"
+        - "https://fred.stlouisfed.org/"
+        - "https://www.bis.org/"
+        - "https://www.ncbi.nlm.nih.gov/"
+        - "https://www.ebi.ac.uk/"
+        - "https://docs.ros.org/"
+        - "https://www.nist.gov/robotics"
+        - "https://www.genome.gov/"
+        - "https://www.annualreviews.org/"
+        - "https://openstax.org/subjects/science"
+
+  - id: "math_statistics_optimization"
+    name: "Mathematics + Statistics + Optimization"
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github:
+      min_stars: 50
+      languages: [Python, Julia, R, "C++", Fortran]
+      topics: [optimization, numerical-analysis, scientific-computing, statistics, probability, linear-algebra, symbolic-math, convex-optimization]
+      max_repos: 250
+    arxiv: {categories: [math.OC, math.NA, math.ST, stat.ML, stat.ME, cs.LG], max_results: 200}
+    huggingface:
+      datasets:
+        - {repo: "openai/gsm8k", revision: "740312a", split: "train", text_field: "question", max_docs: 7500}
+    google: {queries: ["convex optimization theory tutorial", "probability statistics mathematical foundations", "numerical optimization algorithms explained"]}
+    web:
+      seed_urls:
+        - "https://dlmf.nist.gov/"
+        - "https://mathworld.wolfram.com/"
+        - "https://ocw.mit.edu/search/?d=Mathematics"
+        - "https://www.siam.org/publications/siam-journals"
+        - "https://docs.scipy.org/doc/scipy/"
+        - "https://numpy.org/doc/stable/"
+        - "https://www.statsmodels.org/stable/"
+        - "https://www.ams.org/"
+        - "https://www.mit.edu/~dimitrib/"
+        - "https://www.cs.cmu.edu/~ggordon/"
+
+  - id: "physics_chemistry_materials"
+    name: "Physics + Chemistry + Materials Science"
+    sources: {web: true, github: true, arxiv: true, huggingface: false, google: true}
+    github:
+      min_stars: 50
+      languages: [Python, Fortran, "C++", Julia]
+      topics: [computational-physics, quantum-mechanics, molecular-dynamics, computational-chemistry, materials-science, spectroscopy, thermodynamics]
+      max_repos: 250
+    arxiv: {categories: [physics, cond-mat, physics.chem-ph, physics.comp-ph, quant-ph, physics.ins-det], max_results: 200}
+    google: {queries: ["quantum mechanics mathematical foundations", "computational chemistry molecular simulation methods", "materials science phase diagrams and characterization"]}
+    web:
+      seed_urls:
+        - "https://physics.nist.gov/"
+        - "https://chemistry.nist.gov/"
+        - "https://materialsproject.org/"
+        - "https://www.cern.ch/"
+        - "https://openstax.org/subjects/science"
+        - "https://pubs.acs.org/"
+        - "https://www.aps.org/"
+        - "https://www.aip.org/"
+        - "https://www.nature.com/subjects/materials-science"
+        - "https://www.osti.gov/"
+
+  - id: "biomedical_health_science"
+    name: "Biomedical Science + Bioinformatics + Health Research"
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github:
+      min_stars: 25
+      languages: [Python, R, "C++", Julia]
+      topics: [bioinformatics, genomics, computational-biology, biomedical-informatics, medical-imaging, proteomics, clinical-data]
+      max_repos: 250
+    arxiv: {categories: [q-bio.GN, q-bio.QM, q-bio.BM, q-bio.MN, cs.CV, stat.AP], max_results: 200}
+    huggingface:
+      datasets:
+        - {repo: "bigbio/pubmed_qa", revision: "15578e8", split: "train", text_field: "question", max_docs: 5000}
+    google: {queries: ["genomics bioinformatics pipeline methods", "biomedical imaging machine learning methods", "clinical research study design statistics"]}
+    web:
+      seed_urls:
+        - "https://pubmed.ncbi.nlm.nih.gov/"
+        - "https://www.ncbi.nlm.nih.gov/books/"
+        - "https://www.nih.gov/"
+        - "https://www.cdc.gov/"
+        - "https://www.fda.gov/"
+        - "https://www.who.int/"
+        - "https://www.ebi.ac.uk/"
+        - "https://www.genome.gov/"
+        - "https://www.niehs.nih.gov/"
+        - "https://www.niaid.nih.gov/"
+
+  - id: "law_compliance_governance"
+    name: "Law + Compliance + Digital Governance"
+    sources: {web: true, github: true, arxiv: true, huggingface: false, google: true}
+    github:
+      min_stars: 25
+      languages: [Python, JavaScript, TypeScript, Java]
+      topics: [legal-tech, compliance, privacy, governance, policy-as-code, audit, regulatory-technology]
+      max_repos: 200
+    arxiv: {categories: [cs.CY, cs.CR, cs.SE, cs.AI, econ.GN], max_results: 200}
+    google: {queries: ["legal reasoning methods and case analysis", "privacy compliance engineering principles", "regulatory technology audit controls"]}
+    web:
+      seed_urls:
+        - "https://www.law.cornell.edu/"
+        - "https://www.justice.gov/"
+        - "https://www.nist.gov/privacy-framework"
+        - "https://www.ftc.gov/"
+        - "https://www.sec.gov/"
+        - "https://www.cisa.gov/"
+        - "https://www.govinfo.gov/"
+        - "https://www.congress.gov/"
+        - "https://eur-lex.europa.eu/"
+        - "https://www.oecd.org/governance/"
+
+  - id: "linguistics_information_retrieval"
+    name: "Linguistics + NLP + Information Retrieval"
+    sources: {web: true, github: true, arxiv: true, huggingface: true, google: true}
+    github:
+      min_stars: 50
+      languages: [Python, Rust, C++, Java]
+      topics: [natural-language-processing, computational-linguistics, information-retrieval, search, speech-recognition, text-mining, machine-translation]
+      max_repos: 250
+    arxiv: {categories: [cs.CL, cs.IR, eess.AS, stat.ML], max_results: 200}
+    huggingface:
+      datasets:
+        - {repo: "sentence-transformers/msmarco", revision: "2a16a97", split: "train", text_field: "query", max_docs: 5000}
+    google: {queries: ["computational linguistics syntax semantics tutorial", "information retrieval ranking algorithms", "speech recognition language modeling fundamentals"]}
+    web:
+      seed_urls:
+        - "https://web.stanford.edu/~jurafsky/slp3/"
+        - "https://aclanthology.org/"
+        - "https://www.nltk.org/"
+        - "https://spacy.io/usage"
+        - "https://huggingface.co/docs/transformers"
+        - "https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html"
+        - "https://www.ling.upenn.edu/"
+        - "https://www.cl.cam.ac.uk/research/nl/"
+        - "https://www.isca-archive.org/"
+        - "https://www.acm.org/"
+
+  - id: "climate_energy_geospatial"
+    name: "Climate Science + Energy Systems + Geospatial Analysis"
+    sources: {web: true, github: true, arxiv: true, huggingface: false, google: true}
+    github:
+      min_stars: 25
+      languages: [Python, R, Julia, C++, Fortran]
+      topics: [climate-science, remote-sensing, geospatial, gis, renewable-energy, power-systems, hydrology, earth-observation]
+      max_repos: 250
+    arxiv: {categories: [physics.ao-ph, eess.SY, eess.SP, cs.SI, stat.AP], max_results: 200}
+    google: {queries: ["climate modeling methods and uncertainty", "renewable energy power systems fundamentals", "remote sensing geospatial analysis methods"]}
+    web:
+      seed_urls:
+        - "https://climate.nasa.gov/"
+        - "https://www.noaa.gov/"
+        - "https://www.usgs.gov/"
+        - "https://www.epa.gov/"
+        - "https://www.energy.gov/"
+        - "https://www.eia.gov/"
+        - "https://www.ipcc.ch/"
+        - "https://www.copernicus.eu/"
+        - "https://earthdata.nasa.gov/"
+        - "https://www.nature.com/subjects/climate-sciences"

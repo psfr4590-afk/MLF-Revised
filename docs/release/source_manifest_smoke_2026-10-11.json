@@ -1,0 +1,171 @@
+{
+  "dataset_group": "smoke",
+  "retrieval": [
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "docs.python.org",
+      "document_count": 1,
+      "duration_seconds": 0.783756,
+      "failed_requests": 0,
+      "http_status_codes": {
+        "200": 1
+      },
+      "identifier": "https://docs.python.org/3/tutorial/",
+      "kind": "web",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 1,
+      "retrieved": true,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": "123f01c1300dabaf0c6ea76390df6fcee11936ac4d967f0d3517d3250e1e3f6b",
+      "status": "SUCCESS",
+      "successful_requests": 1
+    },
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "docs.python.org",
+      "document_count": 1,
+      "duration_seconds": 0.524217,
+      "failed_requests": 0,
+      "http_status_codes": {
+        "200": 1
+      },
+      "identifier": "https://docs.python.org/3/tutorial/controlflow.html",
+      "kind": "web",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 1,
+      "retrieved": true,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": "a9e545c5c95980332de3c0e9566041e62e274efddc35b46faef2199fa10cc3f2",
+      "status": "SUCCESS",
+      "successful_requests": 1
+    },
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "github",
+      "document_count": 0,
+      "duration_seconds": 0.0,
+      "failed_requests": 0,
+      "http_status_codes": {},
+      "identifier": "group:smoke:github",
+      "kind": "github",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 0,
+      "retrieved": false,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": null,
+      "status": "DISABLED",
+      "successful_requests": 0
+    },
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "arxiv",
+      "document_count": 0,
+      "duration_seconds": 0.0,
+      "failed_requests": 0,
+      "http_status_codes": {},
+      "identifier": "group:smoke:arxiv",
+      "kind": "arxiv",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 0,
+      "retrieved": false,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": null,
+      "status": "DISABLED",
+      "successful_requests": 0
+    },
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "HuggingFace",
+      "document_count": 0,
+      "duration_seconds": 0.0,
+      "failed_requests": 0,
+      "http_status_codes": {},
+      "identifier": "group:smoke:huggingface",
+      "kind": "huggingface",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 0,
+      "retrieved": false,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": null,
+      "status": "DISABLED",
+      "successful_requests": 0
+    },
+    {
+      "configured": true,
+      "dataset_group": "smoke",
+      "display_name": "Google",
+      "document_count": 0,
+      "duration_seconds": 0.0,
+      "failed_requests": 0,
+      "http_status_codes": {},
+      "identifier": "group:smoke:google",
+      "kind": "google",
+      "license": "unknown",
+      "license_status": "unknown",
+      "request_count": 0,
+      "retrieved": false,
+      "retry_count": 0,
+      "revision": null,
+      "source_hash": null,
+      "status": "DISABLED",
+      "successful_requests": 0
+    }
+  ],
+  "retrieval_completed_at": "2026-10-10T13:09:24.757470+00:00",
+  "retrieval_started_at": "2026-10-10T13:09:23.452208+00:00",
+  "rights_note": "License and usage terms must be verified before distribution; unknown values are intentional.",
+  "run_id": "951aaf350b3d4069899eace685ddf781",
+  "schema": 3,
+  "source_definition_files": {
+    "dataset_groups": {
+      "path": "config/dataset_groups.smoke.yaml",
+      "sha256": "970fd4b7dfaa71f8e88bba64df46cf5e680bc6f6d2941b852073d460e54804e8"
+    },
+    "dataset_profiles": {
+      "path": "config/dataset_profiles.yaml",
+      "sha256": "2c601f0dbacad4750e1a7445ed747dbd15622b92defd832e16c770452d158d58"
+    },
+    "seed_urls": {
+      "path": "config/seed_urls.txt",
+      "sha256": "62bec68b110ed92d807bd8489fb48486f99d0a0d2e93ef029f146585444b73af"
+    },
+    "source_weights": {
+      "path": "config/source_weights.yaml",
+      "sha256": "12556f317a8ad8d81c2278f890c718d6345485bd6a82b22e8fb99bcd1eaa25fa"
+    }
+  },
+  "source_definition_sha256": "d631f0e05fa4d107a5b7213adf034bd2c78b813b36d767b66a78b5b4edc7664e",
+  "sources": [
+    {
+      "dataset_group": "smoke",
+      "identifier": "https://docs.python.org/3/tutorial/",
+      "kind": "web",
+      "license": "unknown",
+      "raw_source_sha256": null,
+      "revision": null
+    },
+    {
+      "dataset_group": "smoke",
+      "identifier": "https://docs.python.org/3/tutorial/controlflow.html",
+      "kind": "web",
+      "license": "unknown",
+      "raw_source_sha256": null,
+      "revision": null
+    }
+  ]
+}

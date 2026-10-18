@@ -1,0 +1,65 @@
+requirement_id,implementation_path,test_id,test_file,verification_method,evidence_status
+REQ-UI-001,"command_center/, ui/, run_command_center.py",test_REQ_UI_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-UI-002,"command_center/, ui/, run_command_center.py",test_REQ_UI_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-UI-003,"command_center/, ui/, run_command_center.py",test_REQ_UI_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-UI-004,"command_center/, ui/, run_command_center.py",test_REQ_UI_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-UI-005,"command_center/, ui/, run_command_center.py",test_REQ_UI_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-UI-006,"command_center/, ui/, run_command_center.py",test_REQ_UI_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-001,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-002,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-003,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-004,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-005,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ENV-006,"scripts/bootstrap*, scripts/reconcile_environment.py, run_pipeline.py, pyproject.toml, requirements*.txt",test_REQ_ENV_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-001,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-002,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-003,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-004,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-005,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-006,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-007,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-WF-008,"pipeline/orchestrator.py, pipeline/, command_center/runner.py",test_REQ_WF_008,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-001,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-002,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-003,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-004,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-005,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-006,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-007,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-DATA-008,"pipeline/, scripts/export_gguf.py, docs/development/DATA_PROVENANCE.md",test_REQ_DATA_008,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-001,"pipeline/trainer/, pipeline/",test_REQ_ML_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-002,"pipeline/trainer/, pipeline/",test_REQ_ML_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-003,"pipeline/trainer/, pipeline/",test_REQ_ML_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-004,"pipeline/trainer/, pipeline/",test_REQ_ML_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-005,"pipeline/trainer/, pipeline/",test_REQ_ML_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-006,"pipeline/trainer/, pipeline/",test_REQ_ML_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-007,"pipeline/trainer/, pipeline/",test_REQ_ML_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ML-008,"pipeline/trainer/, pipeline/",test_REQ_ML_008,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-001,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-002,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-003,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-004,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-005,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-006,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-ART-007,"scripts/export_gguf.py, scripts/verify_gguf.py, docs/templates/",test_REQ_ART_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-001,"command_center/, pipeline/, scripts/",test_REQ_OPS_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-002,"command_center/, pipeline/, scripts/",test_REQ_OPS_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-003,"command_center/, pipeline/, scripts/",test_REQ_OPS_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-004,"command_center/, pipeline/, scripts/",test_REQ_OPS_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-005,"command_center/, pipeline/, scripts/",test_REQ_OPS_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-006,"command_center/, pipeline/, scripts/",test_REQ_OPS_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-007,"command_center/, pipeline/, scripts/",test_REQ_OPS_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-OPS-008,"command_center/, pipeline/, scripts/",test_REQ_OPS_008,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-001,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-002,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-003,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-004,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-005,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-SEC-006,"scripts/security_gate.py, command_center/, pipeline/, scripts/",test_REQ_SEC_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-001,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_001,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-002,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_002,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-003,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_003,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-004,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_004,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-005,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_005,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-006,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_006,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN
+REQ-REL-007,"scripts/verify_release.py, .github/workflows/, docs/release/",test_REQ_REL_007,tests/governance/test_requirement_acceptance.py,automated_test,NOT RUN

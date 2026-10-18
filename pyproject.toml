@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model-lab-framework"
+version = "1.3.0rc1"
+description = "Local-first end-to-end machine learning data and pretraining pipeline"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+license = {file = "LICENSE"}
+dependencies = [
+  "pyyaml>=6.0,<7", "defusedxml>=0.7.1,<1", "requests>=2.31,<3", "beautifulsoup4>=4.12,<5", "lxml>=6.1,<7", "numpy>=1.26,<3", "packaging>=23.0,<27",
+  "tokenizers>=0.19,<1", "safetensors>=0.4,<1", "datasets>=5.0.1,<6", "huggingface_hub>=0.23,<2", "sentencepiece>=0.2,<1", "trafilatura>=1.12,<3", "langdetect>=1.0.9,<2",
+  "pypdf>=5.0,<7", "openpyxl>=3.1,<4", "python-docx>=1.1,<2", "python-pptx>=0.6.23,<2", "fastapi>=0.141.1,<1", "starlette>=1.3.1,<2",
+  "uvicorn>=0.30,<1", "jinja2>=3.1,<4", "pydantic>=2.0,<3", "httpx>=0.27,<1", "cryptography>=49.0,<51", "pyOpenSSL>=26.4,<27",
+  "sentence-transformers>=6.0.1,<7",
+  "faiss-cpu>=1.15.0,<2", "psutil>=5.9,<8",
+]
+
+[project.optional-dependencies]
+security = ["pip-audit>=2.10.1,<3"]
+
+[project.scripts]
+mlab = "run_pipeline:main"
+mlframework = "mlframework:main"
+mlab-command-center = "run_command_center:main"
+mlab-launch = "launch:main"
+
+[tool.setuptools]
+include-package-data = true
+py-modules = ["run_pipeline", "run_command_center", "launch", "mlframework"]
+
+[tool.setuptools.packages.find]
+include = ["pipeline*", "command_center*", "scripts*", "config*"]
+
+[tool.setuptools.package-data]
+config = ["*.yaml", "*.txt"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [".git", ".pytest_cache", ".ruff_cache", ".runtime", "__pycache__", "datasets", "output", "scratch"]
+
+[tool.ruff.lint]
+select = ["E4", "F"]
+ignore = ["N999"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S110", "PLW1510"]
+"scripts/**" = ["UP031"]
+"tests/test_runtime.py" = ["E402"]
+"tests/model_lab/test_model_lab_services.py" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=command_center.config --cov=command_center.runner --cov=command_center.secrets --cov=command_center.service --cov=command_center.store --cov=command_center.web --cov=pipeline.config_validation --cov=pipeline.contracts.run --cov=pipeline.doctor --cov=pipeline.embedder --cov=pipeline.filtering --cov=pipeline.integrity --cov=pipeline.experiment_db --cov=pipeline.model_sizer --cov=pipeline.orchestrator --cov=pipeline.tokenizer --cov=pipeline.trainer --cov=pipeline.weighter --cov-report=term-missing --cov-report=json"
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["command_center.config", "command_center.runner", "command_center.secrets", "command_center.service", "command_center.store", "command_center.web", "pipeline.config_validation", "pipeline.contracts.run", "pipeline.doctor", "pipeline.embedder", "pipeline.filtering", "pipeline.integrity", "pipeline.experiment_db", "pipeline.model_sizer", "pipeline.orchestrator", "pipeline.tokenizer", "pipeline.trainer", "pipeline.weighter"]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
+exclude_also = ["if __name__ == .__main__:", "raise NotImplementedError"]

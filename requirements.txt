@@ -1,0 +1,6 @@
+# Dependency authority
+# pyproject.toml is the single source of truth for runtime dependencies.
+# This file exists as the bootstrap/install adapter and intentionally delegates
+# dependency resolution to the package metadata. PyTorch remains host-specific
+# and is installed separately by bootstrap.py from requirements-torch.txt.
+-e .

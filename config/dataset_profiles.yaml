@@ -1,0 +1,83 @@
+schema: 2
+catalog: "canonical-dataset-profiles"
+version: 1
+dataset_profiles:
+  - dataset_id: 1
+    group_id: "swe_cs_systems"
+    name: "Software Engineering + Computer Science + Systems Engineering"
+    specialization: "software systems, algorithms, operating systems, distributed systems, architecture"
+    purpose: "Narrow SME for building and reasoning about production software and computer systems."
+    composition_tags: [software-engineering, computer-science, systems, algorithms, distributed-systems]
+    exclusions: [general-news, marketing, entertainment]
+
+  - dataset_id: 2
+    group_id: "ai_ml_cybersec_dataeng"
+    name: "AI/ML + Cybersecurity + Data Engineering"
+    specialization: "machine learning systems, security engineering, MLOps, data pipelines"
+    purpose: "Narrow SME for ML engineering, defensive security, and data infrastructure."
+    composition_tags: [ai, machine-learning, cybersecurity, mlops, data-engineering]
+    exclusions: [offensive-instructions, general-news, marketing]
+
+  - dataset_id: 3
+    group_id: "sci_reasoning_forensics_formal"
+    name: "Scientific Reasoning + Digital Forensics + Formal Methods"
+    specialization: "formal reasoning, evidence analysis, forensics methodology, theorem proving"
+    purpose: "Narrow SME for rigorous reasoning, evidence handling, and formal verification."
+    composition_tags: [scientific-reasoning, forensics, formal-methods, verification]
+    exclusions: [unverified-claims, sensational-content, general-news]
+
+  - dataset_id: 4
+    group_id: "domain_finance_bio_robotics"
+    name: "Finance + Biology + Robotics"
+    specialization: "quantitative finance, computational biology, robotics and control"
+    purpose: "Cross-domain technical SME combining quantitative and physical-world systems."
+    composition_tags: [finance, biology, robotics, control-systems]
+    exclusions: [investment-advice, medical-advice, general-news]
+
+  - dataset_id: 5
+    group_id: "math_statistics_optimization"
+    name: "Mathematics + Statistics + Optimization"
+    specialization: "mathematical foundations, probability, statistics, numerical methods, optimization"
+    purpose: "Narrow mathematical SME for derivations, quantitative reasoning, and optimization."
+    composition_tags: [mathematics, statistics, probability, optimization, numerical-analysis]
+    exclusions: [financial-advice, medical-advice, general-news]
+
+  - dataset_id: 6
+    group_id: "physics_chemistry_materials"
+    name: "Physics + Chemistry + Materials Science"
+    specialization: "physical laws, chemical systems, simulation, thermodynamics, materials characterization"
+    purpose: "Narrow physical-sciences SME for scientific modeling and materials reasoning."
+    composition_tags: [physics, chemistry, materials-science, simulation, thermodynamics]
+    exclusions: [general-news, marketing, unsupported-health-claims]
+
+  - dataset_id: 7
+    group_id: "biomedical_health_science"
+    name: "Biomedical Science + Bioinformatics + Health Research"
+    specialization: "biomedical literature, genomics, bioinformatics, medical imaging, research methods"
+    purpose: "Narrow biomedical research SME grounded in scientific literature and computational methods."
+    composition_tags: [biomedicine, bioinformatics, genomics, medical-imaging, research-methods]
+    exclusions: [personal-medical-diagnosis, treatment-prescription, general-news]
+
+  - dataset_id: 8
+    group_id: "law_compliance_governance"
+    name: "Law + Compliance + Digital Governance"
+    specialization: "legal reasoning, compliance engineering, privacy, governance, audit controls"
+    purpose: "Narrow legal/compliance SME for structured analysis of rules, controls, and governance."
+    composition_tags: [law, compliance, privacy, governance, audit]
+    exclusions: [personal-legal-advice, political-persuasion, general-news]
+
+  - dataset_id: 9
+    group_id: "linguistics_information_retrieval"
+    name: "Linguistics + NLP + Information Retrieval"
+    specialization: "language structure, NLP, search, ranking, speech, information retrieval"
+    purpose: "Narrow language-and-search SME for text processing and retrieval systems."
+    composition_tags: [linguistics, nlp, information-retrieval, search, speech]
+    exclusions: [general-news, marketing, low-quality-social-content]
+
+  - dataset_id: 10
+    group_id: "climate_energy_geospatial"
+    name: "Climate Science + Energy Systems + Geospatial Analysis"
+    specialization: "climate modeling, energy systems, remote sensing, GIS, Earth observation"
+    purpose: "Narrow Earth-systems SME for climate, energy, and geospatial reasoning."
+    composition_tags: [climate, energy, geospatial, remote-sensing, earth-observation]
+    exclusions: [unsupported-climate-claims, investment-advice, general-news]

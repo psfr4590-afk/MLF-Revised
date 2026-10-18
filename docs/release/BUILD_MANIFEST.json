@@ -1,0 +1,83 @@
+{
+  "format": "model-lab-build-manifest",
+  "version": "1.3.0rc1",
+  "source_of_truth": "main",
+  "purpose": "Describe the public release-candidate build surface without embedding runtime artifacts or machine-specific checksums.",
+  "tracked_layers": {
+    "entrypoints": [
+      "launch.py",
+      "run_pipeline.py",
+      "run_command_center.py",
+      "bootstrap.py"
+    ],
+    "pipeline": [
+      "pipeline/crawler",
+      "pipeline/cleaner",
+      "pipeline/filtering",
+      "pipeline/embedder",
+      "pipeline/dedupe",
+      "pipeline/weighter",
+      "pipeline/tokenizer",
+      "pipeline/shardwriter",
+      "pipeline/trainer",
+      "pipeline/contracts",
+      "pipeline/integrity.py",
+      "pipeline/model_sizer.py",
+      "pipeline/orchestrator.py",
+      "pipeline/doctor.py"
+    ],
+    "operator_surface": ["command_center"],
+    "compatibility_surface": ["launch.py", "ui/app.py"],
+    "configuration": ["config"],
+    "release_tooling": ["scripts"],
+    "verification": [
+      "tests",
+      ".github/workflows/ci.yml",
+      ".github/workflows/security.yml",
+      ".github/workflows/release.yml"
+    ]
+  },
+  "runtime_exclusions": [
+    "datasets/",
+    "output/",
+    "scratch/",
+    ".runtime/",
+    "checkpoints/",
+    "logs/",
+    "caches/",
+    "native build products",
+    "live credentials and .env files"
+  ],
+  "artifact_contract": {
+    "crawl": "01_crawled.jsonl",
+    "clean": "02_cleaned.jsonl",
+    "dedup": "03_deduped.jsonl",
+    "weight": "04_weighted.jsonl",
+    "tokenize": "tokenizer/tokenizer.json",
+    "shard": "shards/shards.manifest.json",
+    "train": "checkpoints/ckpt_*.pt",
+    "export": "GGUF model artifacts plus export manifest"
+  },
+  "verification": {
+    "automated": [
+      "compileall",
+      "pytest",
+      "configuration contracts",
+      "artifact integrity",
+      "security gate"
+    ],
+    "release": [
+      "dependency freeze",
+      "SBOM",
+      "native llama.cpp bootstrap",
+      "GGUF integrity",
+      "native inference"
+    ],
+    "target_machine": [
+      "CUDA",
+      "native llama.cpp",
+      "network access"
+    ],
+    "release_rule": "Environment-dependent capabilities are reported explicitly and are never converted into unconditional passes."
+  }
+}

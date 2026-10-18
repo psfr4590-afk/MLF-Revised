@@ -1,0 +1,3 @@
+Offline pipeline acceptance fixture: provenance should preserve the origin and hash of this local file.
+
+A second distinct document provides enough variation for basic deduplication, tokenizer training, and shard generation checks.

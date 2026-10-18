@@ -1,0 +1,41 @@
+cleaner:
+  min_chars: 200
+  max_chars: 200000
+  normalize_unicode: true
+  strip_html: true
+  collapse_whitespace: true
+  remove_boilerplate: true
+  preserve_code_blocks: true
+
+general:
+  action: drop
+  score_threshold: 0.12
+  min_doc_length: 200
+  max_doc_length: 200000
+
+logging:
+  enabled: true
+  level: INFO
+  log_file: output/logs/cleaner.log
+  log_matched_text: true
+  log_doc_preview: 120
+
+html:
+  enabled: true
+  parser: lxml
+
+unicode:
+  enabled: true
+  normalize_form: NFKC
+  strip_control_chars: true
+
+dedup:
+  enabled: true
+  method: exact_hash
+
+refusal_filter:
+  enabled: true
+  pattern_groups: {}
+  instant_drop_patterns:
+    enabled: true
+    patterns: []

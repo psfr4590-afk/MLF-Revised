@@ -1,0 +1,17 @@
+dataset_groups:
+  - id: a1f-local
+    name: A1-F local filesystem acceptance
+    sources:
+      web: false
+      github: false
+      arxiv: false
+      huggingface: false
+      google: false
+      local_files: true
+    local_files:
+      paths:
+        - tests/fixtures/filesystem_corpus
+      recursive: true
+      extensions: [.md, .txt]
+      max_files: 10
+      max_file_bytes: 100000

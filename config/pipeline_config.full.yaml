@@ -1,0 +1,134 @@
+# Full production-scale Model Lab pipeline configuration.
+pipeline:
+  name: "pretrain-v1"
+  model_name: "pretrain-model"
+  output_dir: "output"
+  scratch_dir: "scratch"
+  resume: true
+  seed: 42
+
+stages:
+  crawl: true
+  clean: true
+  dedup: true
+  weight: true
+  tokenize: true
+  shard: true
+  train: true
+  export: true
+
+crawl:
+  max_workers: 4
+  request_timeout: 15
+  retry_attempts: 3
+  retry_backoff: 2.0
+  respect_robots_txt: true
+  politeness_delay: 1.0
+  max_pages_per_domain: 500
+  max_content_bytes: 5000000
+  max_redirects: 3
+  fail_on_malformed_jsonl: true
+  dataset_groups_file: "config/dataset_groups.yaml"
+  source_weights_file: "config/source_weights.yaml"
+  sources:
+    web: true
+    github: true
+    arxiv: true
+    huggingface: true
+    google: false
+  github:
+    include_wikis: true
+    include_issues: true
+    max_issues_per_repo: 50
+    token_env: "GITHUB_TOKEN"
+  arxiv:
+    fetch_full_text: false
+    fetch_abstract_only: true
+    enrich_citations: true
+  web:
+    seed_urls_file: "config/seed_urls.txt"
+    follow_links: true
+    max_depth: 3
+    stay_on_domain: false
+    use_sitemap_discovery: true
+    english_only: true
+  huggingface:
+    token_env: "HF_TOKEN"
+  google:
+    api_key_env: "GOOGLE_API_KEY"
+    cx_env: "GOOGLE_CX"
+    results_per_query: 10
+    max_pages_per_query: 10
+    seed_urls: []
+    max_seed_urls: 500
+
+clean:
+  config_file: "config/cleaner_config.yaml"
+
+embed_dedup:
+  mode: "embedding"
+  model: "all-MiniLM-L6-v2"
+  model_path: null
+  allow_model_download: false
+  batch_size: 256
+  similarity_threshold: 0.92
+  chunk_size: 512
+  index_type: "flat"
+  ivf_nlist: 100
+
+weight:
+  config_file: "config/source_weights.yaml"
+  strategy: "upsample"
+
+tokenizer:
+  type: "bpe"
+  vocab_size: 32000
+  min_frequency: 2
+  special_tokens: ["<|pad|>", "<|unk|>", "<|bos|>", "<|eos|>", "<|sep|>", "<|mask|>"]
+  train_on_sample: true
+  sample_size: 500000
+  output_path: "output/tokenizer"
+
+shard:
+  sequence_length: 1024
+  dtype: "uint16"
+  shard_size_tokens: 10000000
+  output_dir: "output/shards"
+  val_fraction: 0.005
+  shuffle_docs: true
+  seed: 42
+
+train:
+  resume: true
+  allow_cpu_training: false
+  auto_size: false
+  target_training_hours: null
+  observed_tokens_per_sec: null
+  model_preset: "85M"
+  vocab_size: 32000
+  seq_len: 1024
+  dropout: 0.0
+  lr_max: 3.0e-4
+  lr_min: 3.0e-5
+  weight_decay: 0.1
+  grad_clip: 1.0
+  batch_size: 1
+  grad_accum_steps: 16
+  total_steps: 100000
+  warmup_steps: 2000
+  eval_every_steps: 500
+  eval_batches: 20
+  checkpoint_every_steps: 1000
+  keep_checkpoints: 3
+  shard_dir: "output/shards"
+
+export:
+  format: "gguf"
+  llamacpp_dir: "third_party/llama.cpp"
+  quant: "Q4_K_M"
+  model_name: "pretrain-model"
+
+command_center:
+  host: "127.0.0.1"
+  port: 8000
+  auto_seed_datasets: true

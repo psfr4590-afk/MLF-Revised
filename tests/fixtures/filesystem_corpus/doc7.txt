@@ -1,0 +1,1 @@
+Acceptance document 7: a distinct local-only fixture sentence used to exercise repeatable data preparation. This file has unique terms 7 and deterministic content for tokenizer and shard validation.

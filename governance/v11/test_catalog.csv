@@ -1,0 +1,65 @@
+test_id,requirement_id,test_file,layer,scope
+test_REQ_UI_001,REQ-UI-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Canonical operator interface
+test_REQ_UI_002,REQ-UI-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,State clarity
+test_REQ_UI_003,REQ-UI-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Action feedback
+test_REQ_UI_004,REQ-UI-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Error guidance
+test_REQ_UI_005,REQ-UI-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Capability disclosure
+test_REQ_UI_006,REQ-UI-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,No competing primary UX
+test_REQ_ENV_001,REQ-ENV-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Declared support envelope
+test_REQ_ENV_002,REQ-ENV-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Preflight
+test_REQ_ENV_003,REQ-ENV-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Clean installation
+test_REQ_ENV_004,REQ-ENV-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Archive distribution
+test_REQ_ENV_005,REQ-ENV-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Non-destructive self-test
+test_REQ_ENV_006,REQ-ENV-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Network disclosure
+test_REQ_WF_001,REQ-WF-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Explicit workflow configuration
+test_REQ_WF_002,REQ-WF-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Stage identity
+test_REQ_WF_003,REQ-WF-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Lifecycle semantics
+test_REQ_WF_004,REQ-WF-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Cancellation
+test_REQ_WF_005,REQ-WF-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Retry safety
+test_REQ_WF_006,REQ-WF-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Bounded execution
+test_REQ_WF_007,REQ-WF-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Failure isolation
+test_REQ_WF_008,REQ-WF-008,tests/governance/test_requirement_acceptance.py,governance_acceptance,Job scheduling
+test_REQ_DATA_001,REQ-DATA-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Input identity
+test_REQ_DATA_002,REQ-DATA-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Transformation lineage
+test_REQ_DATA_003,REQ-DATA-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Critical persistence
+test_REQ_DATA_004,REQ-DATA-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Validation before use
+test_REQ_DATA_005,REQ-DATA-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Immutable run evidence
+test_REQ_DATA_006,REQ-DATA-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Checkpoint integrity
+test_REQ_DATA_007,REQ-DATA-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Safe serialization
+test_REQ_DATA_008,REQ-DATA-008,tests/governance/test_requirement_acceptance.py,governance_acceptance,Schema evolution
+test_REQ_ML_001,REQ-ML-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Supported combinations
+test_REQ_ML_002,REQ-ML-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Resource preflight
+test_REQ_ML_003,REQ-ML-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,No false guarantees
+test_REQ_ML_004,REQ-ML-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Training evidence
+test_REQ_ML_005,REQ-ML-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Evaluation context
+test_REQ_ML_006,REQ-ML-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Comparability
+test_REQ_ML_007,REQ-ML-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Completion semantics
+test_REQ_ML_008,REQ-ML-008,tests/governance/test_requirement_acceptance.py,governance_acceptance,Resource stop conditions
+test_REQ_ART_001,REQ-ART-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Artifact identity
+test_REQ_ART_002,REQ-ART-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Export validation
+test_REQ_ART_003,REQ-ART-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Dataset documentation
+test_REQ_ART_004,REQ-ART-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Model documentation
+test_REQ_ART_005,REQ-ART-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Paired integrity
+test_REQ_ART_006,REQ-ART-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Format-specific claims
+test_REQ_ART_007,REQ-ART-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Export lifecycle
+test_REQ_OPS_001,REQ-OPS-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Structured logs
+test_REQ_OPS_002,REQ-OPS-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Redaction
+test_REQ_OPS_003,REQ-OPS-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Diagnostic bundle
+test_REQ_OPS_004,REQ-OPS-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Health reporting
+test_REQ_OPS_005,REQ-OPS-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Recovery guidance
+test_REQ_OPS_006,REQ-OPS-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Backup and restore
+test_REQ_OPS_007,REQ-OPS-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Cleanup safety
+test_REQ_OPS_008,REQ-OPS-008,tests/governance/test_requirement_acceptance.py,governance_acceptance,Retention
+test_REQ_SEC_001,REQ-SEC-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Least privilege
+test_REQ_SEC_002,REQ-SEC-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Path safety
+test_REQ_SEC_003,REQ-SEC-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Secret handling
+test_REQ_SEC_004,REQ-SEC-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Dependency integrity
+test_REQ_SEC_005,REQ-SEC-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Explicit external effects
+test_REQ_SEC_006,REQ-SEC-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Threat review
+test_REQ_REL_001,REQ-REL-001,tests/governance/test_requirement_acceptance.py,governance_acceptance,Layered tests
+test_REQ_REL_002,REQ-REL-002,tests/governance/test_requirement_acceptance.py,governance_acceptance,Failure-path testing
+test_REQ_REL_003,REQ-REL-003,tests/governance/test_requirement_acceptance.py,governance_acceptance,Environment matrix
+test_REQ_REL_004,REQ-REL-004,tests/governance/test_requirement_acceptance.py,governance_acceptance,Clean-machine evidence
+test_REQ_REL_005,REQ-REL-005,tests/governance/test_requirement_acceptance.py,governance_acceptance,Revision/package identity
+test_REQ_REL_006,REQ-REL-006,tests/governance/test_requirement_acceptance.py,governance_acceptance,Honest release gate
+test_REQ_REL_007,REQ-REL-007,tests/governance/test_requirement_acceptance.py,governance_acceptance,Evidence retention

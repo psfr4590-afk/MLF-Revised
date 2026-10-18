@@ -1,0 +1,100 @@
+# Canonical source-weight policy consumed by SourceWeightLookup.
+# All weights are multiplicative and are applied as:
+#   final_weight = domain_weight * content_type_weight * quality_score
+# Code-language weight is folded into content_type_weight for source_code.
+
+domain_weights:
+  - pattern: "*.github.com"
+    weight: 1.15
+    category: github
+  - pattern: "github.com"
+    weight: 1.15
+    category: github
+  - pattern: "*.arxiv.org"
+    weight: 1.25
+    category: arxiv
+  - pattern: "arxiv.org"
+    weight: 1.25
+    category: arxiv
+  - pattern: "*.huggingface.co"
+    weight: 1.10
+    category: huggingface
+  - pattern: "huggingface.co"
+    weight: 1.10
+    category: huggingface
+  - pattern: "*"
+    weight: 1.00
+    category: web
+
+content_type_weights:
+  research_paper: 1.25
+  source_code: 1.15
+  technical_doc: 1.10
+  technical_qa: 1.00
+  encyclopedia: 1.00
+  research_blog: 0.95
+  long_form_essay: 0.90
+  technical_blog: 0.90
+  blog_post: 0.80
+  forum_post: 0.65
+  social_media: 0.20
+  unknown: 0.80
+
+code_language_weights:
+  python: 1.05
+  rust: 1.05
+  go: 1.05
+  cpp: 1.05
+  c: 1.00
+  typescript: 1.00
+  javascript: 0.95
+  java: 0.95
+  ruby: 0.90
+  swift: 0.90
+  zig: 1.00
+  lua: 0.85
+  ocaml: 1.00
+  haskell: 1.00
+  julia: 1.00
+  r: 0.90
+  sql: 0.95
+  bash: 0.95
+  unknown: 1.00
+
+quality_heuristics:
+  min_word_count: 50
+  max_word_count: 100000
+  min_avg_word_length: 3.5
+  max_avg_word_length: 12.0
+  min_unique_word_ratio: 0.20
+  max_digit_ratio: 0.30
+  min_alpha_ratio: 0.60
+  reward_patterns:
+    - "\\b(figure \\d+)\\b"
+    - "\\b(theorem|lemma|proof|corollary|proposition)\\b"
+    - "\\b(algorithm|complexity|O\\(n\\))\\b"
+    - "\\b(dataset|experiment|baseline|benchmark|ablation)\\b"
+    - "\\b(def |class |fn |impl |func )\\b"
+    - "\\breferences?\\b"
+    - "\\b(section|subsection|appendix)\\s+\\d"
+    - "\\b(loss|gradient|backprop|optimizer|epoch|batch)\\b"
+    - "\\b(precision|recall|F1|accuracy|BLEU|ROUGE|perplexity)\\b"
+    - "\\b(assert|unittest|pytest|test_)\\b"
+    - "\\b(API|REST|endpoint|schema|interface)\\b"
+  penalty_patterns:
+    - "click here"
+    - "sign up (now|today|free)"
+    - "limited time offer"
+    - "subscribe (now|to our newsletter)"
+    - "\\bcookie policy\\b"
+    - "\\baffiliate\\b"
+    - "\\bsponsored\\b"
+    - "all rights reserved"
+    - "\\bprivacy policy\\b"
+    - "(buy now|add to cart|checkout)"
+
+signal_gate:
+  enabled: true
+  min_pages_before_score: 10
+  signal_threshold: 0.35
+  window: 20

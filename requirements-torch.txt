@@ -1,4 +1,4 @@
 # Host-specific PyTorch dependency.
 # The bootstrapper installs this from the official CUDA wheel index by default.
 # CPU-only hosts can use: python bootstrap.py --install --torch-channel cpu
-torch>=2.5,<3
+torch>=2.14.1,<3

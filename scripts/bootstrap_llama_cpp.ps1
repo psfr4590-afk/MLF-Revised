@@ -60,7 +60,8 @@ $Args = @(
     "-DGGML_LLAMAFILE=OFF",
     "-DLLAMA_CURL=OFF",
     "-DLLAMA_BUILD_TESTS=OFF",
-    "-DLLAMA_BUILD_SERVER=OFF",
+    # llama-cli is registered only when LLAMA_BUILD_SERVER is enabled in the pinned llama.cpp source.
+    "-DLLAMA_BUILD_SERVER=ON",
     "-DLLAMA_BUILD_APP=ON",
     "-DLLAMA_BUILD_TOOLS=ON",
     "-DLLAMA_BUILD_EXAMPLES=ON",
@@ -153,9 +154,19 @@ Write-Host "`n=== VERIFYING LLAMA-CLI AND QUANTIZER ===" -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) {
     throw "llama-cli --help failed with exit code $LASTEXITCODE"
 }
-& $Quant.FullName --help *> $null
-if ($LASTEXITCODE -ne 0) {
-    throw "llama-quantize --help failed with exit code $LASTEXITCODE"
+$QuantizerHelp = & $Quant.FullName --help 2>&1
+$QuantizerHelpExit = $LASTEXITCODE
+$QuantizerHelpText = $QuantizerHelp | Out-String
+
+if ($QuantizerHelpText -notmatch '(?im)^\s*usage:.*llama-quantize\.exe' -or
+    $QuantizerHelpText -notmatch '(?im)allowed quantization types') {
+    throw "llama-quantize help output validation failed (exit code $QuantizerHelpExit)"
+}
+if ($QuantizerHelpExit -notin @(0, 1)) {
+    throw "llama-quantize --help failed with unexpected exit code $QuantizerHelpExit"
+}
+if ($QuantizerHelpExit -eq 1) {
+    Write-Warning "llama-quantize printed expected help but returned exit code 1; accepting this verified help behavior."
 }
 
 Write-Host "`n=== BUILDING LLAMA-APP ===" -ForegroundColor Cyan

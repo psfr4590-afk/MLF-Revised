@@ -1,1 +1,3 @@
 Acceptance document 8: a distinct local-only fixture sentence used to exercise repeatable data preparation. This file has unique terms 8 and deterministic content for tokenizer and shard validation.
+
+Machine learning model artifacts need explicit metadata and validation. A tokenizer vocabulary must agree with the model configuration that consumes its token identifiers. Dataset manifests should describe the sources and transformations used to construct training shards. Checkpoints should be associated with their training configuration and relevant provenance records. Export validation should verify that the output exists, can be read by the intended tooling, and satisfies the declared artifact contract rather than relying on a successful process exit alone.

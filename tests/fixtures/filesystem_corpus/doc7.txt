@@ -1,1 +1,3 @@
 Acceptance document 7: a distinct local-only fixture sentence used to exercise repeatable data preparation. This file has unique terms 7 and deterministic content for tokenizer and shard validation.
+
+Portable applications should not assume that every computer has the same processor, accelerator, driver, filesystem layout, or available memory. Installation checks should identify required dependencies before expensive work begins. Optional acceleration should have a documented fallback, and unsupported configurations should fail with actionable explanations. Release verification should also run from a clean checkout or source archive so that success does not depend on hidden files left behind by a developer workstation.

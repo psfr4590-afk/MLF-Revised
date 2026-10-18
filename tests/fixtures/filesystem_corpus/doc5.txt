@@ -1,1 +1,3 @@
 Acceptance document 5: a distinct local-only fixture sentence used to exercise repeatable data preparation. This file has unique terms 5 and deterministic content for tokenizer and shard validation.
+
+Software verification combines focused unit tests, integration tests, and end-to-end acceptance tests. Unit tests isolate individual behaviors, while integration tests examine contracts between components. An end-to-end test follows data through the complete system and checks that the expected artifacts are actually produced. Test reports should preserve failure details and distinguish skipped checks from successful checks. A green summary is useful only when the tests exercise the behavior the release claims to support.

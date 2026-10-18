@@ -7,7 +7,7 @@ function Invoke-Checked {
   param([Parameter(Mandatory=$true)][string]$Exe,[Parameter(Mandatory=$false)][string[]]$Arguments=@())
   & $Exe @Arguments
   if ($LASTEXITCODE -ne 0) {
-    throw "Command failed with exit code $LASTEXITCODE: $Exe $($Arguments -join ' ')"
+    throw "Command failed with exit code ${LASTEXITCODE}: $Exe $($Arguments -join ' ')"
   }
 }
 

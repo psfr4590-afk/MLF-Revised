@@ -52,7 +52,7 @@ def _disk_state(path: Path) -> dict[str, Any]:
     try:
         usage = shutil.disk_usage(path)
         return {
-            "path": str(path),
+            "path": "project filesystem",
             "free_gib": round(usage.free / (1024 ** 3), 2),
             "total_gib": round(usage.total / (1024 ** 3), 2),
             "available": True,
@@ -232,7 +232,7 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
             "python_version": sys.version.split()[0],
             "python_executable_name": Path(sys.executable).name,
             "platform": sys.platform,
-            "working_directory": str(root),
+            "project_root_name": root.name,
         },
         "hardware": hardware.to_dict(),
         "memory": {"available_ram_gib": available_ram},

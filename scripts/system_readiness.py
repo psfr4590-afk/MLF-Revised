@@ -13,7 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-DEFAULT_OUTPUT = ROOT / "runtime" / "system_readiness.json"
+def _default_root() -> Path:
+    cwd = Path.cwd().resolve()
+    if (cwd / "run_pipeline.py").is_file() and (cwd / "pipeline").is_dir():
+        return cwd
+    return ROOT
 
 
 def _benchmark_worker(root: Path, warmup_steps: int, benchmark_steps: int) -> dict[str, Any]:
@@ -61,8 +65,8 @@ def _run_benchmark_subprocess(root: Path, warmup_steps: int, benchmark_steps: in
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check whether this Model Lab installation is ready to run safely.")
-    parser.add_argument("--root", type=Path, default=ROOT, help="Project root (defaults to this checkout).")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Atomic JSON report path.")
+    parser.add_argument("--root", type=Path, default=_default_root(), help="Project root (defaults to the current checkout when launched from its root).")
+    parser.add_argument("--output", type=Path, default=None, help="Atomic JSON report path (defaults to ROOT/runtime/system_readiness.json).")
     parser.add_argument("--benchmark", action="store_true", help="Run a bounded benchmark against existing verified training shards.")
     parser.add_argument("--benchmark-timeout", type=float, default=90.0, help="Hard wall-clock limit for the isolated benchmark subprocess.")
     parser.add_argument("--warmup-steps", type=int, default=1)
@@ -90,7 +94,9 @@ def main() -> int:
     benchmark = _run_benchmark_subprocess(root, args.warmup_steps, args.benchmark_steps,
                                           args.benchmark_timeout) if args.benchmark else None
     report = build_readiness_report(root, benchmark=benchmark)
-    output = args.output if args.output.is_absolute() else root / args.output
+    output = args.output or (root / "runtime" / "system_readiness.json")
+    if not output.is_absolute():
+        output = root / output
     written = write_readiness_report(report, output)
     print(json.dumps(report, indent=2, sort_keys=True, allow_nan=False))
     print(f"Readiness report: {written}")

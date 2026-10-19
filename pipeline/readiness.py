@@ -7,6 +7,7 @@ terminated if it exceeds its wall-clock budget.
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import shutil
 import subprocess
@@ -60,6 +61,44 @@ def _disk_state(path: Path) -> dict[str, Any]:
     except OSError as exc:
         return {"path": str(path), "free_gib": None, "total_gib": None,
                 "available": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def _backend_smoke(torch_state: dict[str, Any]) -> dict[str, Any]:
+    """Execute tiny real tensor operations instead of trusting availability flags."""
+    result: dict[str, Any] = {
+        "cpu": {"status": "UNKNOWN", "passed": None, "detail": "Not tested."},
+        "cuda": {"status": "NOT_AVAILABLE", "passed": None, "detail": "PyTorch did not report CUDA available."},
+    }
+    try:
+        torch = importlib.import_module("torch")
+        value = torch.ones((1,), device="cpu")
+        if not bool(torch.isfinite(value).all().item()):
+            raise RuntimeError("CPU tensor returned a non-finite value")
+        result["cpu"] = {"status": "PASS", "passed": True, "detail": "CPU tensor allocation and operation succeeded."}
+    except Exception as exc:
+        result["cpu"] = {"status": "BLOCKED", "passed": False, "detail": f"{type(exc).__name__}: {exc}"}
+    if torch_state.get("cuda_available"):
+        try:
+            torch = importlib.import_module("torch")
+            value = torch.ones((1,), device="cuda")
+            torch.cuda.synchronize()
+            if not bool(torch.isfinite(value).all().item()):
+                raise RuntimeError("CUDA tensor returned a non-finite value")
+            result["cuda"] = {"status": "PASS", "passed": True, "detail": "CUDA tensor allocation, operation, and synchronization succeeded."}
+        except Exception as exc:
+            result["cuda"] = {"status": "BLOCKED", "passed": False, "detail": f"{type(exc).__name__}: {exc}"}
+    return result
+
+
+def _sha256_file(path: Path) -> str | None:
+    try:
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+    except OSError:
+        return None
 
 
 def _check(name: str, status: str, detail: str, *, required: bool = True,
@@ -153,11 +192,24 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
         nvidia_state = _nvidia_state()
     except Exception as exc:
         nvidia_state = {"available": False, "error": f"{type(exc).__name__}: {exc}"}
-    cuda_available = bool(torch_state.get("cuda_available"))
+    backend_smoke = _backend_smoke(torch_state)
+    checks.append(_check(
+        "PyTorch CPU tensor smoke",
+        "PASS" if backend_smoke["cpu"]["passed"] is True else "BLOCKED",
+        backend_smoke["cpu"]["detail"],
+        required=True,
+        recommendation=None if backend_smoke["cpu"]["passed"] is True else "Reinstall or repair PyTorch in the project environment, then rerun readiness.",
+    ))
+    cuda_available = bool(torch_state.get("cuda_available")) and backend_smoke["cuda"]["passed"] is True
     if cuda_available:
         checks.append(_check("CUDA runtime", "PASS",
-                             f"PyTorch {torch_state.get('version')} reports {torch_state.get('device_count', 0)} CUDA device(s).",
+                             f"PyTorch {torch_state.get('version')} passed a CUDA tensor operation and synchronization on {torch_state.get('device_count', 0)} device(s).",
                              required=False))
+    elif hardware.gpu_count and torch_state.get("cuda_available"):
+        checks.append(_check("CUDA runtime", "WARN",
+                             "PyTorch reported CUDA available, but the real CUDA tensor smoke failed; CPU fallback may still work. " + backend_smoke["cuda"]["detail"],
+                             required=False,
+                             recommendation="Verify the installed PyTorch build, driver compatibility, and GPU memory availability."))
     elif hardware.gpu_count:
         checks.append(_check("CUDA runtime", "WARN",
                              "A GPU was detected but PyTorch CUDA is not runtime-verified; CPU fallback may still work.",
@@ -238,6 +290,8 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
         "memory": {"available_ram_gib": available_ram},
         "disk": disk,
         "torch": torch_state,
+        "backend_smoke": backend_smoke,
+        "configuration": {"pipeline_config_sha256": _sha256_file(root / "config" / "pipeline_config.yaml")},
         "nvidia": nvidia_state,
         "checks": checks,
         "training_profile": profile,

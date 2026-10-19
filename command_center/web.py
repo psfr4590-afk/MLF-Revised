@@ -167,7 +167,7 @@ async function refresh(){
 async function runReadiness(){
  try{
   document.getElementById("readiness-summary").textContent="Running non-destructive checks...";
-  var r=await api("/api/readiness"),s=r.summary||{};
+  var r=await api("/api/readiness",{method:"POST"}),s=r.summary||{};
   var cls=s.status==="READY"?"ok":(s.status==="BLOCKED"?"err":"warn");
   document.getElementById("readiness-summary").innerHTML='<div class="metric '+cls+'">'+esc(s.status||"UNKNOWN")+'</div><div class="muted">'+esc(s.passed||0)+' passed · '+esc(s.warnings||0)+' warnings · '+esc(s.blockers||0)+' required blockers</div><div class="muted">Report SHA-256: '+esc(r.report_sha256||"unavailable")+'</div>';
   document.getElementById("readiness-checks").innerHTML='<table><thead><tr><th>Check</th><th>Status</th><th>Details</th><th>Action</th></tr></thead><tbody>'+(r.checks||[]).map(function(x){var cc=x.status==="PASS"?"ok":(x.status==="BLOCKED"?"err":"warn");return '<tr><td>'+esc(x.name)+'</td><td class="'+cc+'">'+esc(x.status)+'</td><td>'+esc(x.detail)+'</td><td>'+esc(x.recommendation||"—")+'</td></tr>';}).join("")+'</tbody></table>';
@@ -184,7 +184,7 @@ def system():
     return {"application":"M²S Model Training Pipeline","version":app.version,"platform":sys.platform,"python":sys.version.split()[0],"machine":platform.machine(),"stages":list(store.STAGES) if hasattr(store,"STAGES") else ["crawl","clean","dedup","weight","tokenize","shard","train","export"],"security":{"api_access":"localhost-only","mutation_control":"custom-header"}}
 
 
-@app.get("/api/readiness")
+@app.post("/api/readiness")
 def system_readiness():
     """Run and persist a fresh, non-destructive readiness assessment."""
     try:

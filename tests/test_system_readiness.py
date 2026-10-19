@@ -17,6 +17,7 @@ def _doctor_checks(_root):
 def _hardware():
     class Profile:
         gpu_count = 0
+        total_ram_gb = 16.0
         def to_dict(self):
             return {"platform": "test", "gpu_count": 0, "gpu_memory_gb": 0.0, "cuda_available": False}
     return Profile()

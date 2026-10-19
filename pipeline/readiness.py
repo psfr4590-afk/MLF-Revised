@@ -114,6 +114,7 @@ def _check(name: str, status: str, detail: str, *, required: bool = True,
 
 def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = None) -> dict[str, Any]:
     """Collect fresh system facts and return a machine-readable readiness report."""
+    import bootstrap
     from pipeline.doctor import run_doctor
     from pipeline.model_sizer import profile_hardware, recommend_training_profile
     from scripts.system_info import _nvidia_state, _torch_state
@@ -124,6 +125,16 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
     available_ram = _available_ram_gib()
     disk = _disk_state(root)
     hardware = profile_hardware(root)
+    try:
+        host_hardware = bootstrap.detect_hardware().as_dict()
+    except Exception as exc:
+        host_hardware = {"gpu_name": None, "gpu_vendor": None,
+                         "error": f"{type(exc).__name__}: {exc}"}
+    try:
+        torch_backends = bootstrap.torch_runtime_status()
+    except Exception as exc:
+        torch_backends = {"error": f"{type(exc).__name__}: {exc}"}
+    host_gpu_detected = bool(host_hardware.get("gpu_name"))
     _, doctor_checks = run_doctor(root)
 
     checks: list[dict[str, Any]] = []
@@ -210,14 +221,14 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
                              "PyTorch reported CUDA available, but the real CUDA tensor smoke failed; CPU fallback may still work. " + backend_smoke["cuda"]["detail"],
                              required=False,
                              recommendation="Verify the installed PyTorch build, driver compatibility, and GPU memory availability."))
-    elif hardware.gpu_count:
+    elif host_gpu_detected:
         checks.append(_check("CUDA runtime", "WARN",
-                             "A GPU was detected but PyTorch CUDA is not runtime-verified; CPU fallback may still work.",
+                             f"GPU detected ({host_hardware.get('gpu_name')}, vendor={host_hardware.get('gpu_vendor') or 'unknown'}), but a CUDA training operation was not verified. The current preflight benchmark uses CUDA or CPU; non-CUDA acceleration is not proven by this check.",
                              required=False,
-                             recommendation="If GPU training is intended, verify the installed PyTorch build, driver compatibility, and a real CUDA tensor operation."))
+                             recommendation="Use CPU fallback unless a supported PyTorch backend and the training path are independently verified for this GPU."))
     else:
         checks.append(_check("CUDA runtime", "PASS",
-                             "No CUDA device was detected; CPU is the expected execution path on this host.",
+                             "No GPU was detected; CPU is the expected execution path on this host.",
                              required=False))
 
     profile = None
@@ -287,9 +298,11 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
             "project_root_name": root.name,
         },
         "hardware": hardware.to_dict(),
+        "host_hardware": host_hardware,
         "memory": {"available_ram_gib": available_ram},
         "disk": disk,
         "torch": torch_state,
+        "torch_backends": torch_backends,
         "backend_smoke": backend_smoke,
         "configuration": {"pipeline_config_sha256": _sha256_file(root / "config" / "pipeline_config.yaml")},
         "nvidia": nvidia_state,

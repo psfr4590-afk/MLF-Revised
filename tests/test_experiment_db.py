@@ -201,7 +201,6 @@ def test_historical_import_is_idempotent(tmp_path):
 
 
 def test_as_float_rejects_non_finite_values():
-    import math
 
     for value in (float("nan"), float("inf"), float("-inf")):
         assert _as_float(value) is None

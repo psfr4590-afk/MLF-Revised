@@ -77,3 +77,24 @@ def test_write_report_is_atomic_json(tmp_path: Path):
 
     assert json.loads(written.read_text(encoding="utf-8")) == report
     assert not target.with_suffix(".json.tmp").exists()
+
+
+def test_command_center_readiness_route_persists_report(monkeypatch, tmp_path: Path):
+    import command_center.web as web
+
+    expected = {
+        "schema_version": 1,
+        "report_sha256": "abc123",
+        "summary": {"status": "READY", "passed": 1, "warnings": 0, "blockers": 0},
+        "checks": [],
+    }
+    monkeypatch.setattr(web, "ROOT", tmp_path)
+    monkeypatch.setattr(web, "build_readiness_report", lambda root: expected)
+    written = []
+    monkeypatch.setattr(web, "write_readiness_report", lambda report, output: written.append((report, output)))
+
+    result = web.system_readiness()
+
+    assert result == expected
+    assert written == [(expected, tmp_path / "runtime" / "system_readiness.json")]
+    assert any(route.path == "/api/readiness" and "POST" in route.methods for route in web.app.routes)

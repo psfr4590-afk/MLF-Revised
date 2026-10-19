@@ -134,7 +134,9 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
         torch_backends = bootstrap.torch_runtime_status()
     except Exception as exc:
         torch_backends = {"error": f"{type(exc).__name__}: {exc}"}
-    host_gpu_detected = bool(host_hardware.get("gpu_name"))
+    host_gpu_detected = bool(host_hardware.get("gpu_name")) or bool(hardware.gpu_count)
+    detected_gpu_name = host_hardware.get("gpu_name") or hardware.gpu_name or "unknown GPU"
+    detected_gpu_vendor = host_hardware.get("gpu_vendor") or ("nvidia" if hardware.gpu_count else "unknown")
     _, doctor_checks = run_doctor(root)
 
     checks: list[dict[str, Any]] = []
@@ -223,7 +225,7 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
                              recommendation="Verify the installed PyTorch build, driver compatibility, and GPU memory availability."))
     elif host_gpu_detected:
         checks.append(_check("CUDA runtime", "WARN",
-                             f"GPU detected ({host_hardware.get('gpu_name')}, vendor={host_hardware.get('gpu_vendor') or 'unknown'}), but a CUDA training operation was not verified. The current preflight benchmark uses CUDA or CPU; non-CUDA acceleration is not proven by this check.",
+                             f"GPU detected ({detected_gpu_name}, vendor={detected_gpu_vendor}), but a CUDA training operation was not verified. The current preflight benchmark uses CUDA or CPU; non-CUDA acceleration is not proven by this check.",
                              required=False,
                              recommendation="Use CPU fallback unless a supported PyTorch backend and the training path are independently verified for this GPU."))
     else:

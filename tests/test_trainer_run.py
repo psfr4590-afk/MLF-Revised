@@ -237,6 +237,92 @@ def test_trainer_run_records_evaluation_and_best_checkpoint(
     assert best_meta["best_step"] is not None
 
 
+def test_final_evaluation_creates_best_checkpoint_when_no_periodic_eval_runs(
+    tmp_path, tiny_training, monkeypatch
+):
+    shard_dir = _make_shards(tmp_path)
+    trainer = train_module.Trainer(
+        _tiny_cfg(
+            tmp_path,
+            shard_dir,
+            total_steps=2,
+            eval_every_steps=99,
+            checkpoint_every_steps=99,
+        )
+    )
+    monkeypatch.setattr(trainer, "_eval", lambda *args: 1.25)
+
+    _, step = trainer.run()
+    assert step == 2
+
+    best = tmp_path / "checkpoints" / "ckpt_best.pt"
+    final = tmp_path / "checkpoints" / "ckpt_final.pt"
+    assert best.is_file()
+    assert final.is_file()
+
+    best_manifest = json.loads(
+        best.with_name(best.name + ".manifest.json").read_text(encoding="utf-8")
+    )
+    final_manifest = json.loads(
+        final.with_name(final.name + ".manifest.json").read_text(encoding="utf-8")
+    )
+    assert best_manifest["checkpoint_kind"] == "best"
+    assert best_manifest["step"] == 2
+    assert best_manifest["best_step"] == 2
+    assert best_manifest["best_val_loss"] == pytest.approx(1.25)
+    assert final_manifest["best_step"] == 2
+    assert final_manifest["best_val_loss"] == pytest.approx(1.25)
+
+    records = [
+        json.loads(line)
+        for line in (tmp_path / "logs" / "metrics.jsonl")
+        .read_text(encoding="utf-8").splitlines()
+    ]
+    final_evaluations = [
+        record for record in records
+        if record.get("evaluation") == "final"
+    ]
+    assert len(final_evaluations) == 1
+    assert final_evaluations[0]["step"] == 2
+    assert final_evaluations[0]["val_loss"] == pytest.approx(1.25)
+
+
+def test_final_evaluation_does_not_replace_a_better_best_checkpoint(
+    tmp_path, tiny_training, monkeypatch
+):
+    shard_dir = _make_shards(tmp_path)
+    trainer = train_module.Trainer(
+        _tiny_cfg(
+            tmp_path,
+            shard_dir,
+            total_steps=2,
+            eval_every_steps=1,
+            checkpoint_every_steps=99,
+        )
+    )
+    losses = iter([1.0, 1.5, 2.0])
+    monkeypatch.setattr(trainer, "_eval", lambda *args: next(losses))
+
+    trainer.run()
+
+    best = tmp_path / "checkpoints" / "ckpt_best.pt"
+    final = tmp_path / "checkpoints" / "ckpt_final.pt"
+    best_manifest = json.loads(
+        best.with_name(best.name + ".manifest.json").read_text(encoding="utf-8")
+    )
+    final_manifest = json.loads(
+        final.with_name(final.name + ".manifest.json").read_text(encoding="utf-8")
+    )
+
+    assert best_manifest["step"] == 1
+    assert best_manifest["val_loss"] == pytest.approx(1.0)
+    assert best_manifest["best_step"] == 1
+    assert best_manifest["best_val_loss"] == pytest.approx(1.0)
+    assert final_manifest["val_loss"] == pytest.approx(2.0)
+    assert final_manifest["best_step"] == 1
+    assert final_manifest["best_val_loss"] == pytest.approx(1.0)
+
+
 def test_trainer_run_prunes_periodic_checkpoints(
     tmp_path, tiny_training
 ):

@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from contextlib import closing
 import json
+import math
 from datetime import datetime, timezone
 import platform
 import sys
@@ -26,6 +27,17 @@ LOCAL_ORIGINS = {"http://127.0.0.1", "http://localhost", "http://[::1]"}
 LOCAL_CLIENT_HOSTS = {"127.0.0.1", "::1", "testclient", "testserver"}
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 CONTROL_HEADER = "x-m2s-command-center"
+
+
+def _sanitize_json_value(value):
+    """Replace non-finite floats recursively so API responses remain strict JSON."""
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {key: _sanitize_json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_sanitize_json_value(item) for item in value]
+    return value
 
 
 class LocalhostOnlyMiddleware(BaseHTTPMiddleware):
@@ -235,7 +247,7 @@ def _run_snapshot(run_id: str | None = None) -> dict:
                     hardware["gpu_utilization"] = snapshot.get("gpu_utilization_percent", snapshot.get("gpu_utilization"))
             except (TypeError, ValueError, json.JSONDecodeError):
                 pass
-        return {
+        return _sanitize_json_value({
             "run": run,
             "stage": stages,
             "training": {
@@ -260,7 +272,7 @@ def _run_snapshot(run_id: str | None = None) -> dict:
                 "configs": configs,
             },
             "checkpoints": checkpoints, "artifacts": artifacts, "warnings": warnings, "errors": errors,
-        }
+        })
     finally:
         db.close()
 

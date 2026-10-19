@@ -6,6 +6,7 @@ forensic evidence and are never deleted or replaced by this store.
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from pathlib import Path
 from pipeline.integrity import sha256_file
@@ -198,7 +199,10 @@ def _as_int(value: Any) -> int | None:
     return int(value) if value is not None else None
 
 def _as_float(value: Any) -> float | None:
-    return float(value) if value is not None else None
+    if value is None:
+        return None
+    number = float(value)
+    return number if math.isfinite(number) else None
 
 
 class ExperimentDB:
@@ -439,6 +443,9 @@ class ExperimentDB:
                 meta = json.loads(mp.read_text(encoding="utf-8"))
             except (OSError, ValueError, TypeError, json.JSONDecodeError):
                 continue
+            provenance = meta.get("provenance")
+            if not isinstance(provenance, dict) or provenance.get("run_id") != run_id:
+                continue
             path = mp.with_name(mp.name.removesuffix(".manifest.json"))
             artifact_id = f"{run_id}:checkpoint:{path.name}"
             self.conn.execute(
@@ -468,6 +475,8 @@ class ExperimentDB:
             except (ValueError, TypeError, json.JSONDecodeError):
                 continue
             if not isinstance(row, dict) or row.get("step") is None:
+                continue
+            if row.get("run_id") != run_id:
                 continue
             step = _as_int(row.get("step"))
             recorded_at = row.get("timestamp") or row.get("recorded_at")

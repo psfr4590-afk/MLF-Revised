@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from pipeline.experiment_db import ExperimentDB
+from pipeline.experiment_db import ExperimentDB, _as_float
 
 
 def _manifest() -> dict:
@@ -102,8 +102,10 @@ def test_external_evidence_is_projected_into_sqlite(tmp_path):
 
     (output / "logs").mkdir()
     (output / "logs" / "metrics.jsonl").write_text(
-        json.dumps({"step": 10, "train_loss": 2.0, "tokens_per_sec": 40.0}) + "\n"
-        + json.dumps({"step": 20, "train_loss": 1.25, "tokens_per_sec": 42.0}) + "\n",
+        json.dumps({"run_id": "run_test_001", "step": 10, "train_loss": 2.0, "tokens_per_sec": 40.0}) + "\n"
+        + json.dumps({"run_id": "run_test_001", "step": 20, "train_loss": 1.25, "tokens_per_sec": 42.0}) + "\n"
+        + json.dumps({"run_id": "run_other_999", "step": 30, "train_loss": 99.0, "tokens_per_sec": 999.0}) + "\n"
+        + json.dumps({"step": 40, "train_loss": 88.0, "tokens_per_sec": 888.0}) + "\n",
         encoding="utf-8",
     )
     (output / "checkpoints").mkdir()
@@ -122,9 +124,36 @@ def test_external_evidence_is_projected_into_sqlite(tmp_path):
             "best_val_loss": 1.25,
             "best_step": 20,
             "final_step": 20,
+            "provenance": {"run_id": "run_test_001"},
         }),
         encoding="utf-8",
     )
+
+    # Shared output directories can contain evidence from other or older runs.
+    # Only evidence with an explicit matching owner may be attributed to this run.
+    for filename, owner in (
+        ("ckpt_foreign.pt", "run_other_999"),
+        ("ckpt_legacy.pt", None),
+    ):
+        checkpoint_path = output / "checkpoints" / filename
+        checkpoint_path.write_bytes(b"checkpoint")
+        checkpoint_meta = {
+            "schema": 3,
+            "kind": "checkpoint",
+            "checkpoint_kind": "periodic",
+            "path": str(checkpoint_path),
+            "size": checkpoint_path.stat().st_size,
+            "sha256": __import__("hashlib").sha256(checkpoint_path.read_bytes()).hexdigest(),
+            "step": 30,
+            "val_loss": 99.0,
+            "best_val_loss": 99.0,
+        }
+        if owner is not None:
+            checkpoint_meta["provenance"] = {"run_id": owner}
+        (output / "checkpoints" / f"{filename}.manifest.json").write_text(
+            json.dumps(checkpoint_meta), encoding="utf-8"
+        )
+
     (output / "preflight_report.json").write_text(
         json.dumps({
             "estimate": {"estimated_duration_seconds": 150.0},
@@ -168,3 +197,14 @@ def test_historical_import_is_idempotent(tmp_path):
     db = ExperimentDB(output / "experiment.db")
     assert db.conn.execute("SELECT COUNT(*) FROM runs").fetchone()[0] == 1
     db.close()
+
+
+
+def test_as_float_rejects_non_finite_values():
+
+    for value in (float("nan"), float("inf"), float("-inf")):
+        assert _as_float(value) is None
+
+    assert _as_float(1.25) == 1.25
+    assert _as_float(0) == 0.0
+    assert _as_float(None) is None

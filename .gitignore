@@ -17,6 +17,7 @@ venv/
 *.pfx
 .runtime/
 runtime/system_info.json
+runtime/system_readiness.json
 *.log
 *.tmp
 datasets/

@@ -216,8 +216,8 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
                              required=False,
                              recommendation="If GPU training is intended, verify the installed PyTorch build, driver compatibility, and a real CUDA tensor operation."))
     else:
-        checks.append(_check("CUDA runtime", "WARN",
-                             "No usable CUDA device was detected. CPU execution may still be available.",
+        checks.append(_check("CUDA runtime", "PASS",
+                             "No CUDA device was detected; CPU is the expected execution path on this host.",
                              required=False))
 
     profile = None

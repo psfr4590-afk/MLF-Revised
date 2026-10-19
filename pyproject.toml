@@ -30,7 +30,7 @@ mlab-launch = "launch:main"
 
 [tool.setuptools]
 include-package-data = true
-py-modules = ["run_pipeline", "run_command_center", "launch", "mlframework"]
+py-modules = ["bootstrap", "run_pipeline", "run_command_center", "launch", "mlframework"]
 
 [tool.setuptools.packages.find]
 include = ["pipeline*", "command_center*", "scripts*", "config*"]

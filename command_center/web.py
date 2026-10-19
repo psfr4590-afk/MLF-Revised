@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from pipeline.version import get_version
+from pipeline.readiness import build_readiness_report, write_readiness_report
 
 from .runner import stop
 from .config import ROOT
@@ -127,13 +128,14 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;bord
 <body>
 <header><div class="header"><div><h1>M²S Model Training Pipeline</h1><div class="sub">Single local operator interface · authoritative SQLite state</div></div><div id="api" class="badge">CONNECTING</div></div></header>
 <main><div class="toolbar">
-<button onclick="refresh()">↻ Refresh</button><button onclick="runStage('crawl')">Run Crawl</button><button onclick="runStage('clean')">Run Clean</button><button onclick="runStage('dedup')">Run Dedup</button><button onclick="runStage('tokenize')">Run Tokenize</button><button onclick="runStage('train')">Train</button><button onclick="runStage('export')">Export</button><button onclick="stopRun()">Stop</button><a href="/docs" target="_blank"><button>API Docs</button></a>
+<button onclick="refresh()">↻ Refresh</button><button onclick="runReadiness()">System Readiness</button><button onclick="runStage('crawl')">Run Crawl</button><button onclick="runStage('clean')">Run Clean</button><button onclick="runStage('dedup')">Run Dedup</button><button onclick="runStage('tokenize')">Run Tokenize</button><button onclick="runStage('train')">Train</button><button onclick="runStage('export')">Export</button><button onclick="stopRun()">Stop</button><a href="/docs" target="_blank"><button>API Docs</button></a>
 </div><div id="message"></div>
 <section class="grid" id="metrics"></section>
 <section class="card"><h2>RUN</h2><div class="rows" id="run"></div></section>
 <section class="card"><h2>TRAINING</h2><div class="rows" id="training"></div></section>
 <section class="card"><h2>DATASET</h2><div class="rows" id="dataset"></div></section>
 <section class="card"><h2>HARDWARE</h2><div class="rows" id="hardware"></div></section>
+<section class="card"><h2>SYSTEM READINESS</h2><div id="readiness-summary" class="muted">Run System Readiness to inspect the current machine. This check does not start training.</div><div id="readiness-checks"></div></section>
 <section class="card"><h2>CREDENTIAL PRESETS</h2><div class="rows" id="credentials"></div><div class="muted">Secrets are never displayed. Configure the four predefined slots below through the secure credential API.</div></section>
 <section class="card"><h2>PROVENANCE</h2><div class="rows" id="provenance"></div></section>
 <section class="card"><h2>PIPELINE STAGES</h2><div id="stages" class="muted">Loading...</div></section>
@@ -162,6 +164,16 @@ async function refresh(){
   document.getElementById("runs").innerHTML='<table><thead><tr><th>Run</th><th>Status</th><th>Started</th><th>Dataset</th><th>Git</th></tr></thead><tbody>'+(r.runs||[]).map(function(x){return '<tr><td>'+esc(x.id)+'</td><td>'+esc(x.status)+'</td><td>'+esc(x.started_at)+'</td><td>'+esc(x.dataset_id)+'</td><td>'+esc(x.git_sha)+'</td></tr>';}).join("")+'</tbody></table>';
  }catch(e){document.getElementById("api").textContent="OFFLINE";document.getElementById("api").className="badge err";document.getElementById("message").textContent=e.message;}
 }
+async function runReadiness(){
+ try{
+  document.getElementById("readiness-summary").textContent="Running non-destructive checks...";
+  var r=await api("/api/readiness"),s=r.summary||{};
+  var cls=s.status==="READY"?"ok":(s.status==="BLOCKED"?"err":"warn");
+  document.getElementById("readiness-summary").innerHTML='<div class="metric '+cls+'">'+esc(s.status||"UNKNOWN")+'</div><div class="muted">'+esc(s.passed||0)+' passed · '+esc(s.warnings||0)+' warnings · '+esc(s.blockers||0)+' required blockers</div><div class="muted">Report SHA-256: '+esc(r.report_sha256||"unavailable")+'</div>';
+  document.getElementById("readiness-checks").innerHTML='<table><thead><tr><th>Check</th><th>Status</th><th>Details</th><th>Action</th></tr></thead><tbody>'+(r.checks||[]).map(function(x){var cc=x.status==="PASS"?"ok":(x.status==="BLOCKED"?"err":"warn");return '<tr><td>'+esc(x.name)+'</td><td class="'+cc+'">'+esc(x.status)+'</td><td>'+esc(x.detail)+'</td><td>'+esc(x.recommendation||"—")+'</td></tr>';}).join("")+'</tbody></table>';
+  document.getElementById("message").textContent="Readiness report saved to runtime/system_readiness.json";
+ }catch(e){document.getElementById("readiness-summary").textContent="Readiness check failed: "+e.message;}
+}
 async function runStage(stage){try{var d=await api("/api/datasets"),did=d[0]&&d[0].id;if(!did)throw new Error("No dataset is available. Create or seed a dataset first.");await api("/api/datasets/"+did+"/stage/"+stage,{method:"POST"});document.getElementById("message").textContent="Requested "+stage+" for dataset "+did+".";setTimeout(refresh,500);}catch(e){document.getElementById("message").textContent=e.message;}}
 async function stopRun(){try{var d=await api("/api/datasets"),did=d[0]&&d[0].id;if(!did)throw new Error("No dataset is available.");await api("/api/datasets/"+did+"/stop",{method:"POST"});refresh();}catch(e){document.getElementById("message").textContent=e.message;}}
 refresh();setInterval(refresh,2500);
@@ -170,6 +182,17 @@ refresh();setInterval(refresh,2500);
 @app.get("/api/system")
 def system():
     return {"application":"M²S Model Training Pipeline","version":app.version,"platform":sys.platform,"python":sys.version.split()[0],"machine":platform.machine(),"stages":list(store.STAGES) if hasattr(store,"STAGES") else ["crawl","clean","dedup","weight","tokenize","shard","train","export"],"security":{"api_access":"localhost-only","mutation_control":"custom-header"}}
+
+
+@app.get("/api/readiness")
+def system_readiness():
+    """Run and persist a fresh, non-destructive readiness assessment."""
+    try:
+        report = build_readiness_report(ROOT)
+        write_readiness_report(report, ROOT / "runtime" / "system_readiness.json")
+        return report
+    except Exception as exc:
+        raise HTTPException(500, {"code": "READINESS_FAILED", "message": f"System readiness could not complete: {type(exc).__name__}"}) from exc
 
 
 

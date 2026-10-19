@@ -267,6 +267,12 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
             "status": "NOT_RUN",
             "detail": "No training benchmark was requested. Hardware detection alone does not prove model-training viability.",
         }
+        checks.append(_check(
+            "Training capability benchmark", "UNKNOWN",
+            "No empirical model-training benchmark has been run. This does not block dataset preparation, but training viability remains unverified.",
+            required=False,
+            recommendation="After verified training shards exist, run python scripts/system_readiness.py --benchmark to test the configured model in an isolated, time-limited process.",
+        ))
     elif benchmark.get("viable") is True:
         benchmark_result = {"status": "PASS", "detail": "Bounded training benchmark completed.", "result": benchmark}
         checks.append(_check("Training capability benchmark", "PASS",

@@ -20,7 +20,7 @@ To run a short capability benchmark against an existing, manifest-backed trainin
 python .\scripts\system_readiness.py --benchmark
 ```
 
-The benchmark runs in a child process and is terminated if it exceeds the default 90-second wall-clock limit. This benchmark requires an existing `shards.manifest.json`; it does not crawl, clean, tokenize, or create a dataset. Its model preset and step count come from the current pipeline configuration. A benchmark failure is recorded separately from installation readiness because a failed model probe does not necessarily mean the application itself cannot run.
+The benchmark runs in a child process and is terminated if it exceeds the default 90-second wall-clock limit. This benchmark requires an existing `shards.manifest.json`; it does not crawl, clean, tokenize, or create a dataset. The model preset, context length, and data type come from the current pipeline configuration; the benchmark step count is explicitly bounded by the CLI arguments (two steps by default). A benchmark failure is recorded separately from installation readiness because a failed model probe does not necessarily mean the application itself cannot run.
 
 Use `--output PATH` to choose a report destination and `--benchmark-timeout SECONDS` to adjust the benchmark wall-clock limit.
 

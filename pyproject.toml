@@ -25,6 +25,7 @@ security = ["pip-audit>=2.10.1,<3"]
 mlab = "run_pipeline:main"
 mlframework = "mlframework:main"
 mlab-command-center = "run_command_center:main"
+mlab-readiness = "scripts.system_readiness:main"
 mlab-launch = "launch:main"
 
 [tool.setuptools]
@@ -54,12 +55,12 @@ ignore = ["N999"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=command_center.config --cov=command_center.runner --cov=command_center.secrets --cov=command_center.service --cov=command_center.store --cov=command_center.web --cov=pipeline.config_validation --cov=pipeline.contracts.run --cov=pipeline.doctor --cov=pipeline.embedder --cov=pipeline.filtering --cov=pipeline.integrity --cov=pipeline.experiment_db --cov=pipeline.model_sizer --cov=pipeline.orchestrator --cov=pipeline.tokenizer --cov=pipeline.trainer --cov=pipeline.weighter --cov-report=term-missing --cov-report=json"
+addopts = "--cov=command_center.config --cov=command_center.runner --cov=command_center.secrets --cov=command_center.service --cov=command_center.store --cov=command_center.web --cov=pipeline.config_validation --cov=pipeline.contracts.run --cov=pipeline.doctor --cov=pipeline.embedder --cov=pipeline.filtering --cov=pipeline.integrity --cov=pipeline.experiment_db --cov=pipeline.model_sizer --cov=pipeline.readiness --cov=pipeline.orchestrator --cov=pipeline.tokenizer --cov=pipeline.trainer --cov=pipeline.weighter --cov-report=term-missing --cov-report=json"
 
 [tool.coverage.run]
 branch = true
 parallel = true
-source = ["command_center.config", "command_center.runner", "command_center.secrets", "command_center.service", "command_center.store", "command_center.web", "pipeline.config_validation", "pipeline.contracts.run", "pipeline.doctor", "pipeline.embedder", "pipeline.filtering", "pipeline.integrity", "pipeline.experiment_db", "pipeline.model_sizer", "pipeline.orchestrator", "pipeline.tokenizer", "pipeline.trainer", "pipeline.weighter"]
+source = ["command_center.config", "command_center.runner", "command_center.secrets", "command_center.service", "command_center.store", "command_center.web", "pipeline.config_validation", "pipeline.contracts.run", "pipeline.doctor", "pipeline.embedder", "pipeline.filtering", "pipeline.integrity", "pipeline.experiment_db", "pipeline.model_sizer", "pipeline.readiness", "pipeline.orchestrator", "pipeline.tokenizer", "pipeline.trainer", "pipeline.weighter"]
 
 [tool.coverage.report]
 skip_empty = true

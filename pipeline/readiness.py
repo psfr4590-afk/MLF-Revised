@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -86,7 +85,7 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
     available_ram = _available_ram_gib()
     disk = _disk_state(root)
     hardware = profile_hardware(root)
-    ok, doctor_checks = run_doctor(root)
+    _, doctor_checks = run_doctor(root)
 
     checks: list[dict[str, Any]] = []
     for item in doctor_checks:

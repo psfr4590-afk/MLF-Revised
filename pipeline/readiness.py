@@ -142,8 +142,18 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
         checks.append(_check("Project disk space", "PASS",
                              f"{disk['free_gib']:.2f} GiB free.", required=False))
 
-    torch_state = _torch_state()
-    nvidia_state = _nvidia_state()
+    try:
+        torch_state = _torch_state()
+    except Exception as exc:
+        torch_state = {
+            "installed": None,
+            "cuda_available": False,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+    try:
+        nvidia_state = _nvidia_state()
+    except Exception as exc:
+        nvidia_state = {"available": False, "error": f"{type(exc).__name__}: {exc}"}
     cuda_available = bool(torch_state.get("cuda_available"))
     if cuda_available:
         checks.append(_check("CUDA runtime", "PASS",
@@ -174,12 +184,13 @@ def build_readiness_report(root: str | Path, benchmark: dict[str, Any] | None = 
                 "Conservative override: available system RAM is unknown or below 3 GiB."
             ]
             profile["reason"] = "; ".join(profile["decision_reasons"])
-        elif available_ram < LOW_RAM_GIB:
+        elif ((hardware.total_ram_gb is not None and hardware.total_ram_gb <= LOW_RAM_GIB)
+              or (available_ram is not None and available_ram < 3.0)):
             profile["model_preset"] = "85M"
             profile["seq_len"] = min(int(profile.get("seq_len", 128)), 256)
             profile["batch_size"] = 1
             profile["decision_reasons"] = list(profile.get("decision_reasons", [])) + [
-                "Conservative override: total/available system memory is constrained."
+                "Conservative override: total system RAM is 8 GiB or less, or less than 3 GiB is currently available."
             ]
             profile["reason"] = "; ".join(profile["decision_reasons"])
     except Exception as exc:

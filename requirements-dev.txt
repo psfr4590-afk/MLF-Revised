@@ -2,5 +2,5 @@
 -r requirements.txt
 pytest>=9.1.1,<10
 pytest-cov>=7.1.0,<8
-ruff>=0.16.10,<1
+ruff>=0.17.2,<1
 cyclonedx-bom>=7.5.0,<8

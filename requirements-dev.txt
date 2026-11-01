@@ -1,6 +1,6 @@
 # Development/test-only dependencies.
 -r requirements.txt
-pytest>=9.1.1,<10
+pytest>=9.2.0,<10
 pytest-cov>=7.1.0,<8
 ruff>=0.16.10,<1
 cyclonedx-bom>=7.5.0,<8
